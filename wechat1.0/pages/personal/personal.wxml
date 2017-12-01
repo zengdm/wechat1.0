@@ -1,0 +1,82 @@
+<!--personal.wxml-->
+<!-- 个人中心 -->
+<view class='head'>
+  <view class='head-img'>
+    <block wx:if="{{userInfo.avatarUrl}}">
+      <image style='width:160rpx;' data-avatarUrl='{{userInfo.avatarUrl}}' mode='widthFix' src='{{userInfo.avatarUrl}}'></image>
+    </block>
+    <block wx:else>
+      <image style='width:160rpx;' mode='widthFix' bindtap='redelegation' src='http://i1.dd-img.com/assets/image/1512041172-85824baf7c27c97a-512w-512h.png'></image>
+    </block>
+  </view>
+
+  <block wx:if="{{userInfo.nickName}}">
+    <view class='head-name'>{{userInfo.nickName}}</view>
+  </block>
+  <block wx:else>
+    <view class='head-name'>登录</view>
+  </block>
+</view>
+
+
+<view class='section'>
+
+  <view class='list'>
+
+    <view class='list-column' bindtap="myCollect">
+      <view class='list-column-intro'>
+        <image src='http://i1.dd-img.com/assets/image/1510125363-f62fcf31025cc29f-40w-40h.png'></image>
+        <text>我的收藏</text>
+      </view>
+      <view class='list-column-next'>
+        <!-- <text></text> -->
+        <image src='http://i1.dd-img.com/assets/image/1510126583-a6c644a211cad9a3-16w-26h.png'></image>
+      </view>
+    </view>
+
+    <view class='list-column' bindtap="carContrast">
+      <view class='list-column-intro'>
+        <image src='http://i1.dd-img.com/assets/image/1510125363-df8aedd1b1bdd726-40w-40h.png'></image>
+        <text>车型对比</text>
+      </view>
+      <view class='list-column-next'>
+        <image src='http://i1.dd-img.com/assets/image/1510126583-a6c644a211cad9a3-16w-26h.png'></image>
+      </view>
+    </view>
+
+  </view>
+
+
+  <view class='list'>
+
+    <view class='list-column' bindtap="wxGroup">
+      <view class='list-column-intro'>
+        <image src='http://i1.dd-img.com/assets/image/1510125363-4bd3def5d2ab2b8b-40w-40h.png'></image>
+        <text>车主微信群</text>
+      </view>
+      <view class='list-column-next'>
+        <!-- <text>1</text> -->
+        <image src='http://i1.dd-img.com/assets/image/1510126583-a6c644a211cad9a3-16w-26h.png'></image>
+      </view>
+    </view>
+
+    <view class='list-column' bindtap="wxService">
+      <view class='list-column-intro'>
+        <image src='http://i1.dd-img.com/assets/image/1510125363-c4288b158af8b81b-40w-40h.png'></image>
+        <text>微信客服</text>
+      </view>
+      <view class='list-column-next'>
+        <image src='http://i1.dd-img.com/assets/image/1510126583-a6c644a211cad9a3-16w-26h.png'></image>
+      </view>
+    </view>
+
+  </view>
+</view>
+
+<button animation="{{animationData}}" class="sharebtn" open-type="share">
+  <text>分享给好友</text>
+  <image class="sharebtnicon" mode="widthFix" src='http://i1.dd-img.com/assets/image/1510898451-a672fd0868b82de9-48w-48h.png'></image>
+</button>
+
+<import src="../inc/login.wxml" />
+<template is="phone" data="{{verifyCodeTime,buttonDisable,phoneBorder,codeBorder,error,hidden}}"></template>

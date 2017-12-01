@@ -1,0 +1,36 @@
+<view class="wrap">
+  <view class="nav">
+    <text class="{{currentTab==0 ? 'border-blue' : ''}}" data-current="0" bindtap="picClick">外观</text>
+    <text class="{{currentTab==1 ? 'border-blue' : ''}}" data-current="1" bindtap="picClick">内饰</text>
+    <text class="{{currentTab==2 ? 'border-blue' : ''}}" data-current="2" bindtap="picClick">细节</text>
+    <text class="{{currentTab==3 ? 'border-blue' : ''}}" data-current="3" bindtap="picClick">空间</text>
+    <text class="{{currentTab==4 ? 'border-blue' : ''}}" data-current="4" bindtap="picClick">底盘</text> 
+  </view>
+  <swiper current="{{currentTab}}" class="section"  duration="300" style="height:{{winHeight - 170}}rpx" bindchange="bindPic">
+    <swiper-item wx:for="{{picture}}" wx:for-index="oneIndex" wx:for-item="oneItem">
+
+      <swiper duration="300" current="{{imgIndex}}" bindchange="swiperChange">
+        <swiper-item wx:for="{{oneItem.photo_data}}"  wx:for-index="littleIndex">
+            <image src="{{item.img}}" data-src="{{item.img}}" data-index='{{littleIndex}}' bindtap="previewImage"></image> 
+        </swiper-item>
+      </swiper>
+       <view class='pagination'>{{imgTab+1}}/{{oneItem.type_count}}</view>
+
+       <scroll-view class='scollImg' scroll-x='true' bindscrolltolower="Rightmost">
+        <view class='little-box'>
+          <view class='img-box' wx:for="{{oneItem.photo_data}}" wx:for-index="littleIndex">
+            <image class="{{imgTab==littleIndex ? 'onimg' : ''}}" mode='widthFix' src="{{item.img}}" data-src="{{item.img}}" data-index='{{littleIndex}}'  bindtap="littleClick" ></image>
+          </view>
+        </view>
+
+      </scroll-view> 
+
+
+
+    </swiper-item>
+
+  </swiper>
+</view>
+
+
+

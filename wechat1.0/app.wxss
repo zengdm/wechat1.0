@@ -1,0 +1,59 @@
+/**app.wxss**/
+
+/*
+  整个小程序的公共样式表
+  可以在页面组件的class属性上直接使用app.wxss中声明的样式规则
+*/
+
+/* 容器部分 */
+
+page {
+  background-color: #fff;
+  height: 100%;
+  font-size: 32rpx;
+  font-family: 'PingFang-SC-Light',
+                 "Lantinghei SC",
+                 "Microsoft YaHei",
+                 "\5FAE\8F6F\96C5\9ED1",
+                 "Helvetica Neue",
+                 Helvetica,
+                 STHeiTi,
+                 Arial,
+                 sans-serif;
+}
+
+/*搜索部分*/
+
+.container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  min-height: 100%;
+  overflow-x: hidden;
+  /*justify-content: space-between;*/
+}
+
+.clearfix:after {
+  display: table;
+  clear: both;
+  content: '';
+}
+
+.pull-left {
+  float: left;
+}
+
+.pull-right {
+  float: right;
+}
+
+/* 小程序中也存在web端一样的问题*/
+
+image {
+  vertical-align: middle;
+}
+

@@ -1,0 +1,57 @@
+/* pages/weChat_group/weChat_group.wxss */
+@import "../wx_car/wx_car.wxss";
+.sharebtn {
+  /* animation: kf-marque-animation 3s linear infinite; */
+  background: #33adff;
+  padding: 0 30rpx 0 20rpx;
+  box-shadow: 0 4rpx 12rpx 0 rgba(50, 173, 255, 0.30);
+  border-radius: 0 200rpx 200rpx 0;
+  /* width:280rpx;  */
+  height: 60rpx;
+  position: fixed;
+  bottom: 126rpx;
+  font-size: 24rpx;
+  color: #fff;
+  left: -19%; 
+  line-height: 60rpx
+}
+
+.sharebtnicon {
+  width: 36rpx;
+  margin:0 0 5rpx 12rpx;
+}
+
+
+.body{
+  background-color: #fff;
+}
+.title {
+  width: 100%;
+  height: 88rpx;
+  position: relative;
+  background:#fafafa;
+}
+
+.title-hot {
+  font-size: 34rpx;
+  color: #000;
+  text-align: left;
+  line-height: 88rpx;
+  padding-left: 30rpx;
+  box-sizing: border-box;
+}
+
+.title-more>text{
+  font-size: 28rpx;
+  color: #33adff;
+}
+
+.title-more>image {
+  width: 32rpx;
+  height: 42rpx;
+}
+.title-more{
+  position: absolute;
+  right: 30rpx;
+  top: 24rpx;
+}

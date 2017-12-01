@@ -1,0 +1,91 @@
+/**personal.wxss**/
+@import "../inc/inc.wxss";
+ /* 个人中心  */
+
+.sharebtn {
+  /* animation: kf-marque-animation 3s linear infinite; */
+  background: #33adff;
+  padding: 0 30rpx 0 20rpx;
+  box-shadow: 0 4rpx 12rpx 0 rgba(50, 173, 255, 0.30);
+  border-radius: 0 200rpx 200rpx 0;
+  /* width:280rpx;  */
+  height: 60rpx;
+  position: fixed;
+  bottom: 40rpx;
+  font-size: 24rpx;
+  color: #fff;
+  left: -19%; 
+  line-height: 60rpx
+}
+
+.sharebtnicon {
+  width: 36rpx;
+  margin:0 0 5rpx 12rpx;
+}
+
+ .head{
+   width: 100%;
+   height: 320rpx;
+   background:linear-gradient(-180deg, #33aeff 7%, #338aff 100%);
+   text-align: center;
+ }
+ .head-img{
+    width: 160rpx;
+    height: 160rpx;
+    border-radius: 50%;
+    display: inline-block;
+    margin-top: 60rpx;
+    overflow: hidden;
+ }
+ .head-name{
+   color: #fff;
+   font-size: 36rpx;
+   line-height: 60rpx;
+ }
+ .section{
+   /* height: 100%; */
+   background-color: #f8f8f8;
+ }
+ .list{
+   background-color: #fff;
+   margin-bottom: 60rpx;
+ }
+.list-column{
+   display: -webkit-box;
+   -webkit-box-orient: horizontal;
+   height: 120rpx;
+   line-height: 120rpx;
+   padding: 0 30rpx;
+   border-bottom: 1px solid #fafafa;
+ }
+ .list-column-intro{
+   -webkit-box-flex: 1;
+ }
+.list-column-intro image{
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 20rpx;
+  vertical-align: middle;
+  margin-bottom: 10rpx;
+}
+.list-column-intro text{
+  font-size: 34rpx;
+  color: #333333;
+}
+
+.list-column-next image{
+  width: 30rpx;
+  height: 40rpx;
+}
+.list-column-next text{
+  height: 40rpx;
+  min-width: 40rpx;
+  line-height: 40rpx;
+  display: inline-block;
+  background: #ff3333;
+  text-align: center;
+  font-size: 28rpx;
+  border-radius: 50%; 
+  color: #fff;
+  margin-right: 14rpx;
+}

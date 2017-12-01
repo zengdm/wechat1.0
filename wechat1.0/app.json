@@ -1,0 +1,65 @@
+{
+  "pages": [
+    "pages/brand/brand",
+    "pages/condition/condition",
+    "pages/choose/choose",
+    "pages/service/service",
+    "pages/news/news",
+    "pages/info_detail/info_detail",
+    "pages/personal/personal",
+    "pages/collect/collect",
+    "pages/details/details",
+    "pages/parameter/parameter",
+    "pages/contrast/contrast",
+    "pages/weChat_group/weChat_group",
+    "pages/atlas/atlas",
+    "pages/choose_car/endurance/endurance",
+    "pages/contrast_add/contrast_add",
+    "pages/wx_hot/wx_hot",
+    "pages/wx_city/wx_city",
+    "pages/wx_car/wx_car",
+    "pages/wx_detail/wx_detail",
+    "pages/choose_car/new_car/new_car",
+    "pages/choose_car/subsidy/subsidy",
+    "pages/choose_car/coming_soon/coming_soon",
+    "pages/city/city",
+    "pages/arrange/arrange"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#33ADFF",
+    "navigationBarTextStyle": "#fff",
+    "onReachBottomDistance": "1120px"
+  },
+  "tabBar": {
+    "color": "#a9b7b7",
+    "selectedColor": "#33ADFF",
+    "borderStyle": "#fff",
+    "backgroundColor": "#fff",
+    "list": [
+      {
+        "pagePath": "pages/news/news",
+        "text": "资讯",
+        "iconPath": "pages/images/tab2.png",
+        "selectedIconPath": "pages/images/tab2s.png"
+      },
+      {
+        "pagePath": "pages/brand/brand",
+        "text": "选车",
+        "iconPath": "pages/images/tab1.png",
+        "selectedIconPath": "pages/images/tab1s.png"
+      },
+      {
+        "pagePath": "pages/personal/personal",
+        "text": "我的",
+        "iconPath": "pages/images/tab3.png",
+        "selectedIconPath": "pages/images/tab3s.png"
+      }
+    ]
+  },
+  "networkTimeout": {
+    "request": 10000,
+    "downloadFile": 10000
+  },
+  "debug": true
+}
