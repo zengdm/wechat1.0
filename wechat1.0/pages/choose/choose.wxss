@@ -10,19 +10,19 @@ canvas{
 	box-sizing: border-box;
 	height:155px;
   top: -90rpx;
-  left: -20rpx;
+   /* left: -20rpx;  */
   /* border-top: 1px solid #cff;
   border-bottom: 1px solid #cff */
 }
 .canvasnumber{
  position: absolute;
-left:140rpx;
+left:70px;
  top:60px;
  font-size: 34rpx;
  color:#666666;
 }
 .canvasnumber text{
-  margin: 0 30rpx;
+  margin: 0 25rpx;
 }
 /* 分类--S */
 
@@ -238,4 +238,8 @@ color:#33adff;
 }
 .choosebg{
   height: 100rpx;
+}
+
+.forbid{
+    background: #e6e6e6;
 }

@@ -16,7 +16,7 @@
 
     <view class='owner'>
       <view>群主昵称：{{wxDetail.master_name}}</view>
-      <text>微信号：{{wxDetail.master_number}}</text>
+      <text bindtap='copy'>微信号：{{wxDetail.master_number}}</text>
       <image bindtap='copy' src='http://i1.dd-img.com/assets/image/1510226711-a2f8a7598cd519d2-116w-34h.png'></image>
     </view>
 

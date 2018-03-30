@@ -19,12 +19,12 @@
     <text>添加车型</text>
   </view>
 
-  <view class='begin' wx:if="{{tipsData.carList.length>0}}">
+</view>
+
+<view class='begin fix' wx:if="{{tipsData.carList.length>0}}">
     <view class='begin-delete' wx:if="{{tipsData.selCars.length>0}}" bindtap="remCars">删除</view>
     <view class='begin-delete cancel' bindtap='onClose' wx:else>关闭</view>
     
     <view class='begin-choose' wx:if="{{tipsData.selCars.length>0}}" bindtap="goParam">开始对比这 <text>{{tipsData.selCars.length}}</text> 款车</view>
     <view class='begin-choose zero' wx:else>开始对比这 <text>{{tipsData.selCars.length}}</text> 款车</view>
   </view>
-
-</view>

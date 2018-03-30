@@ -16,7 +16,7 @@ Page({
     // 列表数据
     res: {article:[], serie:[]},
     // 列表分页条数
-    psize: 10,
+    psize: 99,
     // 文章当前分页
     pages: {article:1, serie:1},
     // 列表是否已到尾页
@@ -40,24 +40,42 @@ Page({
 
     // that.wxapi.favList('serie', 1, that.data.psize, 'cb_serie');
 
-    that.wxapi.favList('serie', that.data.pages.serie, that.data.psize, 'cb_List');
+    // that.wxapi.favList('serie', that.data.pages.serie, that.data.psize, 'cb_List');
 
-    // 收藏的文章列表（延迟加载)
-    setTimeout(function(){
-      that.wxapi.favList('article', that.data.pages.article, that.data.psize, 'cb_List');
-    }, 1000);
+    // // 收藏的文章列表（延迟加载)
+    // setTimeout(function(){
+    //   that.wxapi.favList('article', that.data.pages.article, that.data.psize, 'cb_List');
+    // }, 1000);
     
 
 
     // 设置屏幕
     wx.getSystemInfo({
       success: function (res) {
+        console.log(res);
+
         that.setData({
           winWidth: res.windowWidth,
           winHeight: res.windowHeight
         });
       }
     });
+
+  },
+
+  onShow:function(){
+    var that = this;
+
+    // 收藏的车系列表
+
+    // that.wxapi.favList('serie', 1, that.data.psize, 'cb_serie');
+
+    that.wxapi.favList('serie', that.data.pages.serie, that.data.psize, 'cb_List');
+
+    // 收藏的文章列表（延迟加载)
+    setTimeout(function () {
+      that.wxapi.favList('article', that.data.pages.article, that.data.psize, 'cb_List');
+    }, 200);
 
   },
   /**
@@ -71,9 +89,8 @@ Page({
     // 重置请求(可再次请求下一页)
     that.data.loading = false;
 
-
-    // console.log(that.data.res.serie)
-
+    // 清除数据
+    that.data.res[ftype] = [];
 
     if (res.code==0) {
       // 追加列表数据
@@ -81,33 +98,38 @@ Page({
       for (var i=0; i<len; i++) {
         that.data.res[ftype].push(res.data[i]);
       }
+      // 返回数据量
+      var len = that.data.res[ftype].length;
+
       // 是否尾页
-      if (len<that.data.psize) {
+      if (len<that.data.psize || !len) {
         that.data.more[ftype] = false;
       }
-      console.log()
 
-
-      var serielen = that.data.res['serie'].length;
-      var articlelen = that.data.res['article'].length;
-      if (serielen == 0){
-        console.log("555555555555555555555555555555")
-      }else{
-        that.setData({
-          // resData: that.data.res,
-          serie: that.data.res.serie,
-          morePage: that.data.more,
-        })
-      }
-      if (articlelen == 0) {
-        console.log("555555555555555555555555555555")
-      } else {
-        that.setData({
-          // resData: that.data.res,
-          article: that.data.res.article,
-          morePage: that.data.more,
-        })
-      }
+      // 设置模板变量
+      var tData = {morePage:that.data.more};
+      tData[ftype] = that.data.res[ftype];
+      that.setData(tData);
+      // var serielen = that.data.res['serie'].length;
+      // var articlelen = that.data.res['article'].length;
+      // if (serielen == 0){
+      //   // console.log("555555555555555555555555555555")
+      // }else{
+      //   that.setData({
+      //     // resData: that.data.res,
+      //     serie: that.data.res.serie,
+      //     morePage: that.data.more,
+      //   })
+      // }
+      // if (articlelen == 0) {
+      //   // console.log("555555555555555555555555555555")
+      // } else {
+      //   that.setData({
+      //     // resData: that.data.res,
+      //     article: that.data.res.article,
+      //     morePage: that.data.more,
+      //   })
+      // }
 
    
 
@@ -117,13 +139,13 @@ Page({
       // 提示错误消息
     }
 
-    console.log('callback cb_serie--------------------------------------------');
-    console.log(res);
+    // console.log('callback cb_serie--------------------------------------------');
+    // console.log(res);
   },
 
   parseSerie: function(data) {
-    console.log('callback serielist');
-    console.log(data);
+    // console.log('callback serielist');
+    // console.log(data);
   },
 
   getEndurance: function (that) {
@@ -142,8 +164,8 @@ Page({
         'content-type': 'application/json',
       },
     }).then(function (res) {
-      console.log("5555555555555555555555");
-        console.log(res);
+      // console.log("5555555555555555555555");
+      //   console.log(res);
 
 
     })
@@ -193,28 +215,30 @@ Page({
 
   itemClick: function (e) {
     var that = this;
-    console.log(e.currentTarget.dataset.feedid);
+    if (e.currentTarget.dataset.feedid){
+      console.log('feedfeed')
+      var data = {
+        feedid: e.currentTarget.dataset.feedid,
+        platid: e.currentTarget.dataset.platid,
+        sourceid: e.currentTarget.dataset.sourceid,
+      };
 
+      wx.navigateTo({
+        url: '../info_detail/info_detail?feedid=' + data.feedid + '&sourceid=' + data.sourceid + '&platid=' + data.platid
+      })
+    }else{
+      console.log('lunlun')
+      var data = {
+        platid: e.currentTarget.dataset.platid,
+        sourceid: e.currentTarget.dataset.sourceid,
+      };
+
+      wx.navigateTo({
+        url: '../info_detail/info_detail?platid=' + data.platid + '&sourceid=' + data.sourceid
+      })
+    }
   
-    var data = {
-      feedid: e.currentTarget.dataset.feedid,
-      // platid: e.currentTarget.dataset.platid,
-      // sourceid: e.currentTarget.dataset.sourceid
-    };
-
-    // console.log(that.data.points[data.feedid]);
-
-    // 设置浏览量
-    // if (that.data.points[data.feedid]) {
-    //   that.data.points[data.feedid]['pv']++;
-    //   that.setData({
-    //     points: that.data.points
-    //   })
-    // }
-    // console.log(data);
-    wx.navigateTo({
-      url: '../info_detail/info_detail?feedid=' + data.feedid
-    })
+   
   },
 
   scrollArt: function(e) {
@@ -242,6 +266,5 @@ Page({
       // 过期重置
       setTimeout(function() {that.data.loading = false}, 5000);
     }
-    console.log('load more');
   }
 });

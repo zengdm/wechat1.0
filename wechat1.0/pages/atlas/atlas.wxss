@@ -8,6 +8,10 @@ border:4rpx solid #33adff;
 box-sizing:border-box;
 
 }
+.none{
+  display: none;
+}
+
 .nav{
   height: 90rpx;
   line-height: 90rpx;

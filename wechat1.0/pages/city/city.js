@@ -1,11 +1,14 @@
 import xapi from "../../utils/xapi"
+
 var app = getApp();
 Page({
   data: {
     toView: '',
     winHeight: '',
     winWidth: '',
-    pinyin:{}
+    pinyin:{},
+    // 当前城市
+    city:{},
   },
   searchTag: function () {
     wx.navigateTo({
@@ -30,16 +33,26 @@ Page({
     
   },
 
+  setCity: function() {
+    var that = this;
+    that.setData({
+      cityId: that.data.city.cityId,
+      cityName: that.data.city.cityName
+    });
+  },
+
   onReady: function () {
     var that = this;
     wx.getStorage({
       //获取当前城市
         key: 'city',
         success: function (getres) {
-          that.setData({//逻辑层到视图层
-            cityId: getres.data.cityId,
-            cityName: getres.data.cityName
-          });
+          that.data.city = getres.data;
+          that.setCity();
+          // that.setData({//逻辑层到视图层
+          //   cityId: getres.data.cityId,
+          //   cityName: getres.data.cityName
+          // });
         }
       })
 
@@ -66,9 +79,11 @@ Page({
     var that = this;
 
     // var pinyin = that.data.pinyin
-
+    console.log(event.currentTarget);
     var cityName = event.currentTarget.dataset.cityname;
     var cityId = event.currentTarget.dataset.cityid;
+    that.data.city = {cityId:cityId, cityName:cityName};
+    that.setCity();
 
     wx.setStorage({
       key: 'city',

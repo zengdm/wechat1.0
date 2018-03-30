@@ -1,6 +1,7 @@
 <!--details.wxml-->
 <!-- 车型详情页 -->
-<view class="container">
+<scroll-view scroll-y="{{scrollBoolean}}" style='height:{{winHeight}}px' bindscroll="scroll">
+  <!-- <view class="container" bindscroll="scroll" >  -->
   <view class="main">
     <view class="main-img">
       <image wx:if="{{detailData.focus}}" class="main-img-car" src="{{detailData.focus}}" mode='aspectFill' bindtap="picShow"></image>
@@ -10,14 +11,27 @@
       </view>
       <view class='carpics' bindtap="picShow">
         <text class="carpicbg"></text>
-        <text class="carpicshow">{{detailData.imgs_count}}</text>
+        <text class="carpicshow" wx:if="{{detailData.imgs_count}}">{{detailData.imgs_count}}</text>
+        <text class="carpicshow" wx:else>0</text>
       </view>
     </view>
     <view class="main-price">
       <view class='main-title'>{{detailData.name}}</view>
-      <view class="main-price-num">厂商指导价价：￥{{detailData.min_guide_price}}-{{detailData.max_guide_price}}</view>
+      <view class="main-price-num">厂商指导价价：
+        <block wx:if="{{detailData.min_guide_price!=detailData.max_guide_price}}">
+          ￥{{detailData.min_guide_price}}-{{detailData.max_guide_price}}万
+        </block>
+        <block wx:elif="{{detailData.min_guide_price==detailData.max_guide_price}}">
+          ￥{{detailData.min_guide_price}}万
+        </block>
+      </view>
       <view class="main-price-num">补贴后：
-        <text class="num-num">￥{{detailData.min_actual_price}}-{{detailData.max_actual_price}}</text>
+        <block wx:if="{{detailData.min_actual_price!=detailData.max_actual_price}}">
+          <text class="num-num">￥{{detailData.min_actual_price}}-{{detailData.max_actual_price}}万</text>
+        </block>
+        <block wx:elif="{{detailData.min_actual_price==detailData.max_actual_price}}">
+          <text class="num-num">￥{{detailData.min_actual_price}}万</text>
+        </block>
       </view>
       <view class='cars-level'>
         <image wx:if="{{detailData.type=='1'}}" src='http://i1.dd-img.com/assets/image/1510300689-9381441f8d0f1352-100w-100h.png'></image>
@@ -54,7 +68,7 @@
             <view>快充</view>
           </view>
           <view class='cars-para-list'>
-            <view class='color-blue'>8
+            <view class='color-blue'>{{detailData.zczbnf}}
               <text class='color-gray'>年</text>
             </view>
             <view>质保</view>
@@ -63,15 +77,15 @@
         <swiper-item class="cars-para-item" data-current="1" bindtap="getitemone">
           <view class='cars-para-list'>
             <view class='color-blue'>{{detailData.dcrl}}
-              <text class='color-gray'></text>
+              <text class='color-gray'>千瓦·时</text>
             </view>
-            <view>容量</view>
+            <view>电池容量</view>
           </view>
           <view class='cars-para-list'>
-            <view class='color-blue'>320
-              <text class='color-gray'></text>
+            <view class='color-blue'>{{detailData.zhzdnj}}
+              <text class='color-gray'>牛·米</text>
             </view>
-            <view>马力</view>
+            <view>扭矩</view>
           </view>
           <view class='cars-para-list'>
             <view class='color-blue'>{{detailData.cgcd}}
@@ -80,7 +94,7 @@
             <view>慢充</view>
           </view>
           <view class='cars-para-list'>
-            <view class='color-blue'>18
+            <view class='color-blue'>{{detailData.zczblc}}
               <text class='color-gray'>万公里</text>
             </view>
             <view>质保</view>
@@ -116,22 +130,24 @@
     </view>
   </view>  -->
 
-  <view wx:if="{{carDatalen > 0}}">
+  <block wx:if="{{carDatalen > 0}}">
     <!-- <view> -->
-    <scroll-view scroll-y  bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
-      <!--选项卡 S-->
-      <view class="swiper-tab">
-        <block wx:for="{{carsData}}" wx:for-item="carsItem" wx:key="index">
-          <view wx:if="{{carsItem.sales_status==1}}" class="swiper-tab-item {{currentTab==index ? 'on' : ''}}" data-current="{{index}}" bindtap="swichNav">全部在售</view>
-          <view wx:elif="{{carsItem.sales_status==2}}" class="swiper-tab-item {{currentTab==index ? 'on' : ''}}" data-current="{{index}}" bindtap="swichNav">停产停售</view>
-          <view wx:else class="swiper-tab-item {{currentTab==index ? 'on' : ''}}" data-current="{{index}}" bindtap="swichNav">未上市</view>
-        </block>
-      </view>
-      <!--选项卡 E-->
-      <!--车型列表 S-->
-      <swiper current="{{currentTab}}" class="swiper-box" duration="300" style='height:{{winHeight+1200}}rpx' bindchange="bindChange">
-        <block wx:for="{{carsData}}" wx:for-item="carsItem" wx:key="index" wx:for-index="iindex">
-          <swiper-item>
+    <!-- <scroll-view scroll-y  bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}"> -->
+    <!--选项卡 S-->
+    <view class="swiper-tab {{scrollHeight==0 ? 'scrollHeighton' : ''}}">
+      <!-- <view class="swiper-tab"> -->
+      <block wx:for="{{carsData}}" wx:for-item="carsItem" wx:key="index">
+        <view wx:if="{{carsItem.sales_status==1}}" class="swiper-tab-item {{currentTab==index ? 'on' : ''}}" data-current="{{index}}" bindtap="swichNav">全部在售</view>
+        <view wx:elif="{{carsItem.sales_status==2}}" class="swiper-tab-item {{currentTab==index ? 'on' : ''}}" data-current="{{index}}" bindtap="swichNav">停产停售</view>
+        <view wx:else class="swiper-tab-item {{currentTab==index ? 'on' : ''}}" data-current="{{index}}" bindtap="swichNav">未上市</view>
+      </block>
+    </view>
+    <!--选项卡 E-->
+    <!--车型列表 S-->
+    <swiper current="{{currentTab}}" class="swiper-box  {{scrollHeight==0 ? 'scrollmargin' : ''}}" style='height:{{winHeight*2}}rpx' bindchange="bindChange">
+      <block wx:for="{{carsData}}" wx:for-item="carsItem" wx:key="index" wx:for-index="iindex">
+        <swiper-item>
+          <scroll-view scroll-y style='{{scrollHeights}}'>
             <block wx:for="{{carsItem.chexingtype}}" wx:for-item="carsItemlist" wx:for-index="jindex">
               <view wx:if="{{carsItemlist.niankuan}}" class="configuration-title">
                 <text class="configuration-title-pic">{{carsItemlist.niankuan}}</text>
@@ -163,7 +179,7 @@
                     <view class='configuration-list-pic'>
                       <view wx:if="{{chexingListItem.img_count > 0}}">
                         <image bindtap="cartypeShow" data-pzid='{{chexingListItem.pzid}}' class='configuration-tu' src='http://i1.dd-img.com/assets/image/1510225898-8de014c581ae4624-30w-30h.png'></image>
-                        <text bindtap="cartypeShow">图片</text>
+                        <text bindtap="cartypeShow" data-pzid='{{chexingListItem.pzid}}'>图片</text>
                       </view>
                       <view wx:else>
                         <image class='configuration-tu' src='http://i1.dd-img.com/assets/image/1510733570-f6e957f47b2208bf-30w-30h.png'></image>
@@ -193,19 +209,21 @@
                 </block>
               </block>
             </block>
+            <view class='buttonbg'></view>
             <!-- <view class='carslist-number'>共{{carsItem.count}}款车型</view> -->
-          </swiper-item>
-        </block>
-      </swiper>
-      <!--车型列表 E-->
-    </scroll-view>
-  </view>
-  <view wx:else>
+          </scroll-view>
+        </swiper-item>
+      </block>
+    </swiper>
+    <!--车型列表 E-->
+    <!-- </scroll-view> -->
+  </block>
+  <block wx:else>
     <view class='unlisted'>
       <text>该车系还未有车型上市和公布详细信息</text>
       <text>小编正在为您奋力准备，稍后再见</text>
     </view>
-  </view>
+  </block>
 
 
   <view class='configuration-button'>
@@ -220,44 +238,56 @@
     </view>
 
 
-    <view bindtap='carTips'>
+    <view wx:if="{{tipsData.carList.length>0}}" bindtap='carTips'>
       <image class='configuration-button-pic' src='http://i1.dd-img.com/assets/image/1510226727-47732ec50dd5435b-40w-40h.png'></image>
       <text>车型对比</text>
       <view wx:if="{{tipsData.carList.length>0}}" class='configuration-number'>{{tipsData.carList.length}}</view>
     </view>
+    <view wx:else class="forbid">
+      <image class='configuration-button-pic' src='http://i1.dd-img.com/assets/image/1510226727-47732ec50dd5435b-40w-40h.png'></image>
+      <text>车型对比</text>
+    </view>
   </view>
-</view>
-
+  <!-- </view>  -->
+</scroll-view>
 
 <!-- 车型对比弹窗 -->
 <view class='comparison' bindtap='cancel' wx:if="{{comparison}}"></view>
-<view class='reduce' animation="{{animationData}}">
-  <view class='body '>
-    <view class='choose'>
-      <checkbox-group bindchange="selCars">
-        <view class='choose-list' wx:for="{{tipsData.carList}}" wx:key="carindex" wx:for-item="car" checked="{{car.checked}}" data-selected="0" data-pzid="{{car.pzid}}" data-cxid="{{car.cxid}}" data-ppid="{{car.ppid}}">
-          <checkbox value="{{car.pzid}}" checked="{{tipsData.carIds[car.pzid]>1}}" />{{car.pp_name}} | {{car.cx_name}} {{car.name}}
-          <!-- <image  src='http://i1.dd-img.com/assets/image/1510284149-96076f3f0ece8a8f-40w-40h.png'></image> -->
-          <!-- <text>{{car.pp_name}}  |  {{car.cx_name}} {{car.name}}</text> -->
-        </view>
-      </checkbox-group>
+<view class="drawer-box" animation="{{animationContrast}}">
+  <scroll-view scroll-y="true" style="height:{{winHeight-50}}px">
+
+    <view class='body'>
+      <view class='choose'>
+        <checkbox-group bindchange="selCars">
+          <view class='choose-list' wx:for="{{tipsData.carList}}" wx:key="carindex" wx:for-item="car" checked="{{car.checked}}" data-selected="0" data-pzid="{{car.pzid}}" data-cxid="{{car.cxid}}" data-ppid="{{car.ppid}}">
+            <checkbox value="{{car.pzid}}" checked="{{tipsData.carIds[car.pzid]>1}}" />{{car.pp_name}} | {{car.cx_name}} {{car.name}}
+            <!-- <image  src='http://i1.dd-img.com/assets/image/1510284149-96076f3f0ece8a8f-40w-40h.png'></image> -->
+            <!-- <text>{{car.pp_name}}  |  {{car.cx_name}} {{car.name}}</text> -->
+          </view>
+        </checkbox-group>
+
+      </view>
+
 
     </view>
 
-    <view class='begin'>
-      <view class='begin-delete' wx:if="{{tipsData.selCars.length>0}}" bindtap="remCars">删除</view>
-      <view class='begin-delete cancel' bindtap='cancel' wx:else>关闭</view>
 
-      <view bindtap="goParam" class='begin-choose reduce-delete'>开始对比这
-        <text>{{tipsData.selCars.length}}</text> 款车</view>
-    </view>
+  </scroll-view>
+
+  <view class='begin'>
+    <view wx:if="{{tipsData.selCars.length>0}}" class='begin-delete' bindtap="remCars">删除</view>
+    <view wx:else class='begin-delete cancel' bindtap='cancel'>关闭</view>
+    <view bindtap="goParam" class='begin-choose reduce-delete {{tipsData.selCars.length>0?"":"zero"}}'>开始对比这
+      <text>{{tipsData.selCars.length}}</text> 款车</view>
   </view>
 </view>
+
+
 
 <loading hidden="{{hiddenlodding}}">
   加载中...
 </loading>
-<button class="sharebtn" open-type="share">
+<button animation="{{animationData}}" class="sharebtn" open-type="share">
   <text>分享给好友</text>
   <image class="sharebtnicon" mode="widthFix" src='http://i1.dd-img.com/assets/image/1510898451-a672fd0868b82de9-48w-48h.png'></image>
 </button>

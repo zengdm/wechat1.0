@@ -48,21 +48,24 @@ Page({
   },
 
   carDetail: function (e) {
-
     var that = this;
-
-    var dataName = e.currentTarget.dataset.name;
-    var dataSummary = e.currentTarget.dataset.summary;
-    var dataMasterName = e.currentTarget.dataset.mastername;
-    var dataMasterNumber = e.currentTarget.dataset.masternumber;
-    var dataMasterQr = e.currentTarget.dataset.masterqr;
-    var dataCover = e.currentTarget.dataset.cover;
-    // console.log(dataName, dataSummary, dataMasterName, dataMasterNumber, dataMasterQr, dataCover);
-
-    //跳转到新页面，可返回
+    var id = e.currentTarget.dataset.id;
     wx.navigateTo({
-      url: '../wx_detail/wx_detail?name=' + dataName + '&summary=' + dataSummary + '&master_name=' + dataMasterName + '&master_number=' + dataMasterNumber + '&master_qr=' + dataMasterQr + '&cover=' + dataCover
-    })
+      url: '../wx_detail/wx_detail?id=' + id
+    });
+
+    // var dataName = e.currentTarget.dataset.name;
+    // var dataSummary = e.currentTarget.dataset.summary;
+    // var dataMasterName = e.currentTarget.dataset.mastername;
+    // var dataMasterNumber = e.currentTarget.dataset.masternumber;
+    // var dataMasterQr = e.currentTarget.dataset.masterqr;
+    // var dataCover = e.currentTarget.dataset.cover;
+    // // console.log(dataName, dataSummary, dataMasterName, dataMasterNumber, dataMasterQr, dataCover);
+
+    // //跳转到新页面，可返回
+    // wx.navigateTo({
+    //   url: '../wx_detail/wx_detail?name=' + dataName + '&summary=' + dataSummary + '&master_name=' + dataMasterName + '&master_number=' + dataMasterNumber + '&master_qr=' + dataMasterQr + '&cover=' + dataCover
+    // })
   },
 
   /**

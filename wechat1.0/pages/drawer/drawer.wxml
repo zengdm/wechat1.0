@@ -1,11 +1,11 @@
- <template name="drawer"> 
+<template name="drawer">
 
   <!--遮罩 S-->
-   <view class="drawer-mask" bindtap="hideDrawer" wx:if="{{showDrawerFlag}}" catchtouchmove></view> 
+  <view class="drawer-mask" bindtap="hideDrawer" wx:if="{{showDrawerFlag}}" catchtouchmove></view>
   <!--遮罩 E-->
   <!--抽屉内容 S-->
-  <scroll-view animation="{{animationData}}" class="drawer-box" scroll-y="true">
-    <scroll-view class="drawer-content" scroll-y="true">
+  <scroll-view animation="{{animationDrawer}}" class="drawer-box" scroll-y="true">
+    <!-- <scroll-view class="drawer-content" scroll-y="true"> -->
       <view wx:for="{{drawerSeriesData}}" class="drawer-content-item">
         <text>{{item.text}}</text>
         <view wx:for="{{item.children}}" class="drawer-child" bindtap="gotoSeries" data-pinyin="{{item.pinyin}}" data-cityval="{{cityIdData}}">
@@ -25,10 +25,10 @@
               <text class='price-no'>未上市</text>
             </view>
           </view>
-
         </view>
       </view>
-    </scroll-view>
+    <!-- </scroll-view> -->
   </scroll-view>
+  
 
- </template> 
+</template>

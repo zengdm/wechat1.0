@@ -12,8 +12,8 @@
     <text class="current-city">当前城市</text>
   </view>
 
-  <view class="city">
-    <text class="city-real" data-cityid="{{cityId}}">{{cityName}}</text>
+  <view class="city"   data-cityId="{{cityId}}" data-cityName="{{cityName}}" bindtap='cityClick'>
+    <text class="city-real">{{cityName}}</text>
   </view>
 
   <view class="city-item" wx:for="{{cityLetter}}" wx:for-index="letterIndex" wx:for-item="letterItem" wx:key="flag">

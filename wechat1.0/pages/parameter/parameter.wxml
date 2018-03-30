@@ -16,20 +16,28 @@
         <view class="car-item-title  {{(fields[currentTab][cindex]['showT']>0 || currentTab==0) ? 'showClass' : 'hideClass'}}">
           <text id='{{tparam.string}}'>{{tparam.name}}</text>
         </view>
-        <view class="car-item-list {{(fields[currentTab][cindex][lists.field]>0 || currentTab==0)?'showCalss':'hideClass'}}" wx:for="{{tparam.list}}" wx:for-index="lindex" wx:for-item="lists">
-          <text class=" carname">{{lists.name}}</text>
+        <view wx:for="{{tparam.list}}" wx:for-index="lindex" wx:for-item="lists" class="car-item-list {{(fields[currentTab][cindex][lists.field]>0 || currentTab==0)?'showCalss':'hideClass'}}">
+          <text class=" carname right-text">{{lists.name}}</text>
         </view>
       </view>
     </view>
-    <view class='container-list'>
+    <view class='container-list' >
     </view>
     <!-- 车型参数配置列表 -->
     <view wx:for="{{carParams}}" wx:key="keycindex" wx:for-index="cindex" wx:for-item="cinfo" class="container-list {{delIndexs[cindex]>0?'hideClass':'showClass'}}">
       <view class='parameter-list'>
-        <view class='parameter-list-name'>{{cinfo.pp_name}}{{cinfo.cx_name}}{{cinfo.name}}</view>
+        <view class='parameter-list-name'>{{cinfo.pp_name}} {{cinfo.cx_name}}
+          <view>{{cinfo.niankuan}}款</view>
+          <view>{{cinfo.name}}</view>
+        </view>
         <image wx:if="{{carNum > 1}}" class='parameter-list-delete' mode='widthFix' src='http://i1.dd-img.com/assets/image/1511595759-46ad77ef2f731675-40w-40h.png' bindtap='getdelete' data-index="{{cindex}}"></image>
       </view>
       <view class='container-list-parameter' wx:for="{{cinfo}}" wx:for-index="pkey" wx:for-item="param" wx:if="{{param.name}}">
+
+
+
+
+
         <view class="car-item {{(fields[currentTab][pkey]['showT']>0) ? 'showClass':'hideClass'}}">
           <view class="car-item-title">
             <text>
@@ -42,7 +50,7 @@
       </view>
     </view>
     <view class='container-list'>
-      <view class='parameter-list' bindtap='getcaradd'>
+      <view class='parameter-list' wx:if="{{carParamsLen<5}}" bindtap='getcaradd'>
         <image class='parameter-list-add' mode='widthFix' src='http://i1.dd-img.com/assets/image/1511603021-25538ffa1f429a00-80w-80h.png'></image>
         <text class='more-cars'>最多添加5款车</text>
       </view>
@@ -51,7 +59,7 @@
         <view class="car-item-title  {{(fields[currentTab][cindex]['showT']>0 || currentTab==0) ? 'showClass' : 'hideClass'}}">
           <text id='{{tparam.string}}'></text>
         </view>
-        <view class="car-item-list {{(fields[currentTab][cindex][lists.field]>0 || currentTab==0)?'showCalss':'hideClass'}}" wx:for="{{tparam.list}}" wx:for-index="lindex" wx:for-item="lists">
+        <view wx:if="{{carParamsLen<5}}" class="car-item-list {{(fields[currentTab][cindex][lists.field]>0 || currentTab==0)?'showCalss':'hideClass'}}" wx:for="{{tparam.list}}" wx:for-index="lindex" wx:for-item="lists">
           <text class=" carname"></text>
         </view>
       </view>

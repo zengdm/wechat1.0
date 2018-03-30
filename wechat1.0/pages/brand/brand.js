@@ -2,6 +2,7 @@ import drawer from '../../pages/drawer/drawer.js'
 import xapi from "../../utils/xapi"
 import util from "../../utils/util"
 import { wxapi } from "../../plugins/wxapi";
+import { share } from '../../plugins/share';
 
 var app = getApp();
 Page({
@@ -24,9 +25,17 @@ Page({
     // 字母表显示状态
     wordline: false,
 
+
+    shareclientYstart: '',
+    shareclientYmove: '',
+
+    //背景内容滚动  false不可滚动 true可滚动
+    scrollBoolean:true,
+    showmask: false,
+
   },
   tapName: function (event) {
-    console.log(event)
+    //console.log(event)
   },
   onLoad: function (options) {
     var that = this;
@@ -44,86 +53,67 @@ Page({
     that.dw = new drawer(that);
     that.ul = new util(that);
     that.wxapi = new wxapi(that);
-    that.wxapi.wxlogin();
 
-    // console.log('global data');
-    // console.log(getApp().globalData);
-    // if (!getApp().globalData.userInfo) {
-    //   console.log('init login');
-    //   that.wxapi.wxlogin();
-    // }
+  //分享
+    that.shareObj = new share(that);
 
-    //获取当前经纬度信息
-    /*
-    wx.getLocation({
-      type: 'wgs84',
-      success: function (res) {
-        // console.log(res)
-        that.data.latitude = res.latitude;
-        that.data.longitude = res.longitude;
-        //调用后台API，获取地址信息
-        wx.request({
-          url: app.apiHost + '/app/xcx/lng-lat/?location=' + that.data.latitude + ',' + that.data.longitude,
-          success: function (res) {
-            // console.log(res.data.data)
-            var data = res.data.data;
-            // that.data.locationData = res.data;
-            that.data.cityIdData = data.cityid;
-            that.data.cityIdName = data.city;
-          },
-
-        });
+    // 设置分享内容
+    that.shareObj.setShare('电动邦，带您一起了解新能源汽车、用好新能源车、玩好新能源汽车！', '/pages/brand/brand');
 
 
-      },
-
-    })
-    // console.log(that.data.cityIdData)
-    if (that.data.cityIdData == '') {
-      //如果没有获取位置权限默认北京
-      that.data.cityIdData = "1101";
-      that.data.cityIdName = "北京"
-    }
-    wx.setStorage({
-      key: 'city',
-      data: {
-        cityId: that.data.cityIdData,
-        cityName: that.data.cityIdName
-      }
-    })
-     */
+    // 获取热门车型列表
+    that.wxapi.getURLData('hotCar',[], 'cb_hotcar');
+    // 设置加载状态(2秒过期)
+    wx.showLoading({
+      title: '加载中',
+    });
+    setTimeout(function(){wx.hideLoading();}, 1000);
   },
+
+
   onReady: function () {
-    var requestUrl = app.apiHost + "/app/xcx/hot-list";
     var that = this;
+    //品牌列表
+    that.wxapi.getURLData('brandList', [], 'cb_brandlist');
 
-    xapi.request({
-      url: requestUrl,
-      data: {},
-      method: 'GET' // OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
-    }).then(function (res) {
-      // console.log(res);
+    // 登录授权
+    that.wxapi.wxlogin();
+  },
 
-      var rdata = res.data;
-      // console.log(rdata);
 
-      that.data.brandData = rdata.data;
-      var myList = rdata.data.list;
-      // console.log(myList);
+  /**
+   * 热门车型数据回调
+   */
+  cb_hotcar: function(res, opt) {
+    var that = this;
+    
+    // 隐藏加载状态
+    wx.hideLoading();
 
-      that.data.brandList = that.reCombine(myList);
-      // console.log(that.data.brandData)
-      // console.log(that.data.brandList)
-
-      that.setData({//逻辑层到视图层
-        brandData: that.data.brandData,
-        brandList: that.data.brandList,
-        num: 1 + parseInt(Math.random() * 5)
-      });
-      // console.log(brandList)
-    })
+    if (res.code==0) {
+      that.setData({
+        brandData: res.data
+        });
+    } else {
+      console.log('hot car api error:' + res.message);
+    }
+  },
+  mo: function (event){
+    console.log(event);
+    event.preventDefault;　　
+  },
+  cb_brandlist: function (res, opt) {
+    var that = this;
+    var myList = res.data;
+    that.data.brandList = that.reCombine(myList);
+    that.setData({//逻辑层到视图层
+      // brandData: that.data.brandData,
+      brandList: that.data.brandList,
+      num: 1 + parseInt(Math.random() * 5)
+    });
 
   },
+
 
   getsubsidy: function () {
     wx.navigateTo({
@@ -173,7 +163,6 @@ Page({
   clickLetter: function (event) {
     var letter = event.target.dataset.letter;
     var that = this;
-    console.log(that.data.currentLetter);
 
     if (that.data.currentLetter === event.target.dataset.current) {
       return false;
@@ -193,73 +182,40 @@ Page({
 
   scroll: function (e) {
     var that = this;
-    console.log('scroll:-------' + that.data.winHeight + '/' + e.detail.scrollTop + '=' + that.data.wordline);
     var scrollTop = e.detail.scrollTop;
-    var winHeight = that.data.winHeight;
-    var newsOne = winHeight * 1.5;
-    var newsTwo = that.data.winHeight * 2.5;
-    console.log('winWidthwinWidthwinWidthwinWidthwinWidth----------' + that.data.winWidth);
-    var newsWidth = that.data.winWidth * 0.19;
 
-    var pscreen = parseInt(e.detail.scrollTop / newsOne) % 2;
-    console.log('pscreean:' + pscreen);
-    // if (scrollTop > newsOne && pscreen == 1)
-    if (newsOne <= scrollTop && scrollTop <= newsTwo) {
-      
-      // console.log('---------------------------------------------showshowshow----------------------------');
-      that.data.wordline = true;
-      that.showWords(newsWidth);
+    if (e.detail.deltaY < 0) {
+      //向上滑动
+      console.log("向上")
+      that.shareObj.showShare();
+
     } else {
-      that.data.wordline = false;
-      that.showWords(newsWidth);
+      //向下滑动
+      console.log("向下")
+      that.shareObj.hideShare();
     }
 
     that.setData({
-      wordlineshow: that.data.wordline,
       scrollTop: scrollTop
     })
 
   },
 
-  // 显示/隐藏分享
-  showWords: function (newsWidth) {
+  // 页面停止，静止3秒
+  handletouchend: function () {
     var that = this;
-    var animation = wx.createAnimation({
-      duration: 300,
-      timingFunction: "linear",
-      delay: 0
-    });
-    that.animation = animation;
-    if (!that.data.wordline) {
-      // 332
-      animation.translateX(0).step();
-    } else {
-      animation.translateX(newsWidth).step();
-    }
-
-    that.setData({
-      animationShare: animation.export(),
-      showShare: that.data.wordline
-    })
-
+    that.shareObj.handletouchend();
   },
 
+
   onShareAppMessage: function (options) {
+    var that = this;
     if (options.from === 'button') {
       console.log('按钮转发');
     } else {
       console.log('右上角转发');
     }
-    return {
-      title: '电动邦，带您一起了解新能源汽车、用好新能源车、玩好新能源汽车！',
-      path: '/pages/brand/brand',
-      success: function (res) {
-        console.log('分享成功');
-      },
-      fail: function (res) {
-        console.log('分享失败');
-      }
-    }
+    return that.shareObj.getShare();
   },
 
 
@@ -269,7 +225,6 @@ Page({
     // if (wx.hideLoading) {
     //     wx.hideLoading();
     // }
-    console.log(res);
 
     // 设置模板数据
     this.setData({
@@ -290,6 +245,7 @@ Page({
       "pbid": ppid,
 
     }, !1);
+
     // var path = '/app/xcx/chexi/';
     // that.getCacheData(path, 'backdraw', data);
 
@@ -298,10 +254,10 @@ Page({
   },
 
   cb_serie: function (res) {
-    console.log(res.list);
+
     this.setData({
       drawerSeriesData: res.list || res.data.list,
-      showDrawerFlag: true
+      showDrawerFlag: true,
     });
   },
 

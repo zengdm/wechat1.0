@@ -1,6 +1,6 @@
 <!--pages/weChat_group/weChat_group.wxml-->
 
-<view class='body'>
+<view class='body'  bindtouchstart="handletouchstart" bindtouchmove="handletouchmove" bindtouchend="handletouchend">
   <view class='section'>
     <view class='title'>
       <text class='title-hot'>热门群组</text>
@@ -15,7 +15,7 @@
 
     <view class='car'>
 
-      <view class='car-intro' bindtap="carDetail" wx:for="{{hotGroup}}" data-name='{{item.name}}' data-summary='{{item.summary}}' data-masterName='{{item.master_name}}' data-masterNumber='{{item.master_number}}' data-masterQr='{{item.master_qr}}' data-cover='{{item.cover}}'>
+      <view class='car-intro' bindtap="carDetail" wx:for="{{hotGroup}}" data-id="{{item.id}}" data-name='{{item.name}}' data-summary='{{item.summary}}' data-masterName='{{item.master_name}}' data-masterNumber='{{item.master_number}}' data-masterQr='{{item.master_qr}}' data-cover='{{item.cover}}'>
 
         <image mode='widthFix' class='car-intro-img' src='{{item.cover}}'></image>
         <view class='car-intro-name'>{{item.name}}</view>
@@ -36,7 +36,7 @@
 
     <view class='car'>
 
-      <view class='car-intro' bindtap="carDetail" wx:for="{{carGroup}}" data-name='{{item.name}}' data-summary='{{item.summary}}' data-masterName='{{item.master_name}}' data-masterNumber='{{item.master_number}}' data-masterQr='{{item.master_qr}}' data-cover='{{item.cover}}'>
+      <view class='car-intro' bindtap="carDetail" wx:for="{{carGroup}}" data-id="{{item.id}}" data-name='{{item.name}}' data-summary='{{item.summary}}' data-masterName='{{item.master_name}}' data-masterNumber='{{item.master_number}}' data-masterQr='{{item.master_qr}}' data-cover='{{item.cover}}'>
         <image mode='widthFix' class='car-intro-img' src='{{item.cover}}'></image>
         <view class='car-intro-name'>{{item.name}}</view>
       </view>

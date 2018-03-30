@@ -1,99 +1,139 @@
 <view class="container">
-  <scroll-view scroll-y bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
-    <view class="swiper-tab">
-      <view class="swiper-tab-item {{currentTab==0 ? 'on' : ''}}" data-current="0" bindtap="swichNav">车系</view>
-      <view class="swiper-tab-item {{currentTab==1 ? 'on' : ''}}" data-current="1" bindtap="swichNav">文章</view>
-    </view>
-    <!--车型列表 S-->
-    <swiper current="{{currentTab}}" duration="300" style="height:{{winHeight +450 }}px" bindchange="bindChange">
-      <swiper-item>
-        <!-- <view>车系</view> -->
-        <scroll-view wx:if="{{serie}}" class="swiper-content" style="height:{{winHeight +450}}px" scroll-y="true" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
-          <view class="drawer-child" wx:for="{{serie}}" wx:for-item="item">
-            <view class='drawer-child-intro drawer-child-intro-car' data-pinyin="{{item.pinyin}}" id="{{item.cxid}}" ontap="gotoSeries">
-              <image class="img img-model" src="{{item.focus}}"></image>
-              <view class="drawer-info">
-                <text>{{item.brand_name}} {{item.name}}</text>
-                <view class='drawer-info-price'>
-                  指导价
-                  <block wx:if="{{item.guide_price!=0}}">
+  <!-- <scroll-view scroll-y bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}"> -->
+  <view class="swiper-tab">
+    <view class="swiper-tab-item {{currentTab==0 ? 'on' : ''}}" data-current="0" bindtap="swichNav">车系</view>
+    <view class="swiper-tab-item {{currentTab==1 ? 'on' : ''}}" data-current="1" bindtap="swichNav">文章</view>
+  </view>
+  <!--车型列表 S-->
+  <swiper class='main-scroll' current="{{currentTab}}" style="height:{{winHeight+465}}rpx" duration="300" bindchange="bindChange">
+    <swiper-item>
+      <!-- <view>车系</view> -->
+      <scroll-view wx:if="{{serie.length}}" class="swiper-content" scroll-y style="height:{{winHeight-45}}px" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+        <view class="drawer-child" wx:for="{{serie}}" wx:for-item="item">
+          <view class='drawer-child-intro drawer-child-intro-car' data-pinyin="{{item.pinyin}}" id="{{item.cxid}}" ontap="gotoSeries">
+            <image class="img img-model" src="{{item.focus}}"></image>
+            <view class="drawer-info">
+              <text>{{item.brand_name}} {{item.name}}</text>
 
-                    <text class="drawer-price">￥{{item.guide_price}}<text>万</text></text>
-                  </block>
-                  <block wx:else>
-                    <view class='drawer-info-price-no'>暂无售价</view>
-                  </block>
-                </view>
+              <view class='drawer-info-price' wx:if="{{item.product_status == 1}}">指导价
+                <text class="drawer-price">￥{{item.guide_price}}万</text>
               </view>
-            </view>
+              <view class='drawer-info-price' wx:if="{{item.product_status == 2}}">
+                <text class="drawer-price">停产</text>
+              </view>
+              <view class='drawer-info-price' wx:if="{{item.product_status == 3}}">
+                <text class="drawer-price">即将上市</text>
+              </view>
 
-            <view class='drawer-endurance' wx:if="{{item.cron_xhlc>0}}">
-              <text>{{item.cron_xhlc}}</text>
-              <view>公里</view>
-            </view>
-            <view class='stop' wx:else>
-              <text wx:if="{{item.status==2}}">停产</text>
-              <text wx:else>即将上市</text>
-            </view>
 
+            </view>
           </view>
-        </scroll-view>
-        <view wx:else class='collectnot'>
-          <text>这里已经空空如也</text>
-          <text>“藏藏更美好…”</text>
+
+          <view class='drawer-endurance'>
+            <text wx:if="{{item.cron_xhlc > 0}}">{{item.cron_xhlc}}</text>
+            <text wx:if="{{item.cron_xhlc == 0}}">-</text>
+            <view>公里</view>
+          </view>
+          <!-- <view class='stop' wx:else>
+            <text wx:if="{{item.product_status==2}}">停产</text>
+            <text wx:else>即将上市</text>
+          </view> -->
+
         </view>
-      </swiper-item>
-      <swiper-item>
-        <!-- <view>文章</view> -->
-        <scroll-view wx:if="{{article}}" class="swiper-content" scroll-y="true" style="height:{{winHeight}}px" bindscroll="scrollArt" lower-threshold="150" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}" bindscrolltolower="loadMore" data-ftype="article">
-          <!-- <view class="drawer-child" data-pinyin="{{pure.pinyin}}" bindtap="gotoSeries" wx:for="{{enduData.ev}}" wx:for-item="pure" wx:for-index="pureIndex"> -->
-          <view class="drawer-child" wx:for="{{article}}" bindtap='itemClick' data-feedid='{{item.feedid}}'>
-            <view class='drawer-child-intro'>
-              <image class="img img-model" src="{{item.attach.imgs[0].imgurl}}"></image>
-              <!-- <view class='img-num'>
+      </scroll-view>
+      <view wx:else class='collectnot'>
+        <text>这里已经空空如也</text>
+        <text>“藏藏更美好…”</text>
+      </view>
+    </swiper-item>
+    <swiper-item>
+      <!-- <view>文章</view> -->
+      <scroll-view wx:if="{{article.length}}" class="swiper-content" scroll-y style="height:{{winHeight-45}}px" bindscroll="scrollArt" lower-threshold="150" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}" bindscrolltolower="loadMore" data-ftype="article">
+        <!-- <view class="drawer-child" data-pinyin="{{pure.pinyin}}" bindtap="gotoSeries" wx:for="{{enduData.ev}}" wx:for-item="pure" wx:for-index="pureIndex"> -->
+        <block wx:for="{{article}}" >
+        <view class="drawer-child"  bindtap='itemClick' data-feedid='{{item.feedid}}' data-platid='{{item.platid}}'  data-sourceid='{{item.sourceid}}' wx:if="{{item.feedid}}">
+          <view class='drawer-child-intro'>
+            <image class="img img-model" src="{{item.attach.imgs[0].imgurl}}"></image>
+            <!-- <view class='img-num'>
                 <text>{{item.attach.imgs.length}}</text>
               </view> -->
-              <view class="drawer-title">
-                <!-- <text>{{pure.pinpai_data.name}} {{pure.name}} {{pure.xhlc}}公里</text> -->
-                <text>{{item.title}}</text>
-                <view class='drawer-title-info'>
-                  <view class='drawer-title-info-box'>
-                    <view class='drawer-title-info-read'>
-                      <image mode='widthFix' src='http://i1.dd-img.com/assets/image/1510212630-f131bbcbd7a07021-28w-28h.png'></image>
-                      {{item.point.pv}}
-                    </view>
-
-                    <view class='drawer-title-info-comment'>
-                      <image mode='widthFix' src='http://i1.dd-img.com/assets/image/1510212630-06b0eb69149b672b-28w-28h.png'></image>
-                      {{item.point.replies}}
-                    </view>
+            <view class="drawer-title">
+              <!-- <text>{{pure.pinpai_data.name}} {{pure.name}} {{pure.xhlc}}公里</text> -->
+              <text>{{item.title}}</text>
+              <view class='drawer-title-info'>
+                <view class='drawer-title-info-box'>
+                  <view class='drawer-title-info-read'>
+                    <image mode='widthFix' src='http://i1.dd-img.com/assets/image/1510212630-f131bbcbd7a07021-28w-28h.png'></image>
+                    {{item.point.pv}}
                   </view>
 
-                  <view class='drawer-title-info-timer'>
-                    <text>{{item.timeshow}}</text>
+                  <view class='drawer-title-info-comment'>
+                    <image mode='widthFix' src='http://i1.dd-img.com/assets/image/1510212630-06b0eb69149b672b-28w-28h.png'></image>
+                    {{item.point.replies}}
                   </view>
-
-
                 </view>
 
+                <view class='drawer-title-info-timer'>
+                  <text>{{item.timeshow}}</text>
+                </view>
+
+
               </view>
+
             </view>
-
-
           </view>
 
 
-        </scroll-view>
-
-        <view wx:else class='collectnot'>
-          <text>这里已经空空如也</text>
-          <text>“藏藏更美好…”</text>
         </view>
 
-      </swiper-item>
-    </swiper>
-    <!--车型列表 E-->
-  </scroll-view>
+        <view class="drawer-child"  bindtap='itemClick' data-platid='{{item.platid}}'  data-sourceid='{{item.sourceid}}' wx:else>
+          <view class='drawer-child-intro'>
+            <image class="img img-model" src="{{item.attach.imgs[0].imgurl}}"></image>
+            <!-- <view class='img-num'>
+                <text>{{item.attach.imgs.length}}</text>
+              </view> -->
+            <view class="drawer-title">
+              <!-- <text>{{pure.pinpai_data.name}} {{pure.name}} {{pure.xhlc}}公里</text> -->
+              <text>{{item.title}}</text>
+              <view class='drawer-title-info'>
+                <view class='drawer-title-info-box'>
+                  <view class='drawer-title-info-read'>
+                    <image mode='widthFix' src='http://i1.dd-img.com/assets/image/1510212630-f131bbcbd7a07021-28w-28h.png'></image>
+                    {{item.point.pv}}
+                  </view>
+
+                  <view class='drawer-title-info-comment'>
+                    <image mode='widthFix' src='http://i1.dd-img.com/assets/image/1510212630-06b0eb69149b672b-28w-28h.png'></image>
+                    {{item.point.replies}}
+                  </view>
+                </view>
+
+                <view class='drawer-title-info-timer'>
+                  <text>{{item.timeshow}}</text>
+                </view>
+
+
+              </view>
+
+            </view>
+          </view>
+
+
+        </view>
+        </block>
+
+
+      </scroll-view>
+
+      <view wx:else class='collectnot'>
+        <text>这里已经空空如也</text>
+        <text>“藏藏更美好…”</text>
+      </view>
+
+    </swiper-item>
+  </swiper>
+  <!--车型列表 E-->
+  <!-- </scroll-view> -->
 
 </view>
 <!-- 

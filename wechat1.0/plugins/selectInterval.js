@@ -55,7 +55,7 @@ SelectInterval.prototype={
 			}
 
 			// object.selectedInterval && this.interval(object.selectedInterval.min,object.selectedInterval.max);
-      object.selectedInterval && this.interval(-7, 57);
+      object.selectedInterval && this.interval(-3, 63);
 			!object.selectedInterval && this.draw();
  		},
  		move:function(dynamicX,dynamicY){
@@ -141,12 +141,16 @@ SelectInterval.prototype={
  		fontTitle:function(){
  			this.ctx.setFontSize(this.showTitle.size);
  			this.ctx.setFillStyle(this.colour.title);
- 			var decimal=this.paragraph[1]/this.decimalPoint;
+ 			var decimal=this.paragraph[1]/this.decimalPoint-10;
  			if(this.range.min <= this.paragraph[2] ){
 				this.range.max>=decimal?this.range.min='全部':this.range.min=`${this.range.min<0?0:this.range.min}${this.showTitle.name}-${this.range.max}${this.showTitle.name}`;
 				this.ctx.fillText(`${this.range.min}`, this.showTitle.positionX  , this.showTitle.positionY);
-
+    
         console.log(this.range.min)
+        // wx.setStorage({
+        //   key: "choosepricepara",
+        //   data: this.range.min
+        // })
 
 			}else{
 				this.range.max >= decimal?this.range.max=`${this.showTitle.name}以上`:this.range.max=`${this.showTitle.name}-${this.range.max}${this.showTitle.name}`;
@@ -168,7 +172,7 @@ SelectInterval.prototype={
  		fontFollow:function(){
  			this.ctx.setFillStyle(this.followValue.color);
  			this.ctx.setFontSize(this.followValue.size);
- 			var decimal=this.paragraph[1]/this.decimalPoint;
+ 			var decimal=this.paragraph[1]/this.decimalPoint-10;
  			this.ctx.fillText(`${this.range.min<=0?0:this.range.min}${this.scaleIn.name}`, this.x1, this.followValue.leftY);
  			this.ctx.fillText(`${this.range.max>decimal?decimal+this.scaleIn.name+'+':this.range.max+this.scaleIn.name}`, this.x2, this.followValue.rightY);
  		},

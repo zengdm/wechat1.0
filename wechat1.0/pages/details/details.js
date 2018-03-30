@@ -1,6 +1,7 @@
 import { favorite } from "../../plugins/favorite";
 import { login } from '../../plugins/login';
 import { wxapi } from '../../plugins/wxapi';
+import { share } from '../../plugins/share';
 
 var app = getApp();
 
@@ -39,25 +40,34 @@ Page({
     codeBorder: false,
     error: false,
     // 收藏相关
-    fav: { 
-        // 收藏的车型列表
-        carList: [],
-        // 收藏的车型数量
-        carNum: 0,  
-        //对比的车型id数据,以车型id作为下标,值[0|1]确认选中状态
-        carIds:{},
-        // 选中的车型列表 
-        selCars:[],
-        // 车系是否被收藏
-        serie:false
-      },
+    fav: {
+      // 收藏的车型列表
+      carList: [],
+      // 收藏的车型数量
+      carNum: 0,
+      //对比的车型id数据,以车型id作为下标,值[0|1]确认选中状态
+      carIds: {},
+      // 选中的车型列表 
+      selCars: [],
+      // 车系是否被收藏
+      serie: false,
+      // 是否默认选中
+      defaultSel:0,
+      // 默认选中数量
+      defaultSelNum:5,
+    },
     // 定时任务
-    interval: {obj:'', num:0},
+    interval: { obj: '', num: 0 },
     // selCars:[],
     // selCarNum:0,
 
     //对比弹层
-    comparison: false
+    comparison: false,
+    //对比按钮
+    forbidOn:false,
+
+    //背景内容滚动  false不可滚动 true可滚动
+    scrollBoolean:true,
   },
 
   onLoad: function (options) {
@@ -67,35 +77,39 @@ Page({
     // 页面初始化 options为页面跳转所带来的参数
     var that = this;
     // 参数获取
-    that.data.pinyin = options.pinyin?options.pinyin:'qin';
+    that.data.pinyin = options.pinyin ? options.pinyin : 'qin';
+
+    // 收藏对象
+    that.fav = new favorite(that);
     // 统一接口类
     that.wxapi = new wxapi(that);
+    that.shareObj = new share(that);
+
+
+    // 根据拼音获取车系信息
+    that.wxapi.serieByPinyin(that.data.pinyin, { city_id: that.data.city.cityId }, 'cb_serieInfo');
     // 用户授权
     that.wxapi.wxlogin();
 
-
-    console.log(that.data.city);
-    // 收藏对象
-    that.fav = new favorite(that);
     //that.fav.cars = that.fav.getFav('car');
     // that.data.fav.carNum = that.fav.cars.length;
     // that.fav.carIds = {};
     // 收藏的车系
     that.fav.serieIds = that.fav.getFav('serie');
-    
+
     that.login = new login(that);
-    console.log(that.data.city);
+    
     that.setData({
-      myData: options,
-      city: that.data.city,
+      myData: options
     });
 
-    // 获取地理位置
-    that.wxapi.getLocation();
-    
+    // 设置城市定位信息
+    that.setCity();
+
     wx.getSystemInfo({
       success: function (res) {
-        console.log(res)
+        that.data.winWidth = res.windowWidth;
+        that.data.winHeight = res.windowHeight
         that.setData({
           winWidth: res.windowWidth,
           winHeight: res.windowHeight
@@ -114,67 +128,96 @@ Page({
     var pinyin = that.data.myData.pinyin;
     var cityId = that.data.city.cityId;
 
-    wx.request({
-      url: app.apiHost + '/app/xcx/detail/?pinyin=' + that.data.pinyin + '&city_id=' + cityId + '&rand' + Math.random(),
-      method: "GET",
-      header: {
-        'content-type': 'application/json'
-      },
-      complete: function (res) {
-        // console.log(res.data)
-      },
-      success: function (res) {
-        var rdata = res.data;
-        that.data.detailData = rdata.data;
-        that.data.carsData = rdata.data.cars;
-        that.data.picpinyin = rdata.data.chexi_pinyin;
-        that.data.cxid = rdata.data.cxid;
-
-
-        // 车系收藏判断
-        that.data.fav.serie = 0;
-        if (that.fav.serieIds.length>0) {
-          var serieIds = ','+that.fav.serieIds.join(',');
-          if (serieIds.toString().indexOf(','+that.data.cxid+'_0')>=0) {
-            that.data.fav.serie = 1;
-          }
-        }
-        
-        // 车型收藏
-        that.favCarList();
-        
-        // 车系收藏
-        that.favSerieList();
-
-        that.setData({//逻辑层到视图层
-          detailData: that.data.detailData,
-          carsData: that.data.carsData,
-          carDatalen: that.data.carsData.length,
-          city: that.data.city,
-          picpinyin: that.data.picpinyin,
-          cxid: that.data.cxid,
-        });
-        
-        // 设置收藏统一变量
-        that.setTipsData();
-        
-        wx.setNavigationBarTitle({
-          title: that.data.detailData.name
-        });
-      }
-    })
-
     // that.setData({
     //   hiddenlodding: true
     // });
-    setTimeout(function () {
-      wx.hideLoading()
-    }, 800)
   },
-  onShow:function(){
+
+  onShow: function () {
     var that = this;
-    that.wxapi.getLocation();
+
+    // 页面加载后获取地理位置
+    that.wxapi.getLocation('cb_location');
   },
+
+  // 设置城市定位信息
+  setCity: function() {
+    var that = this;
+    that.setData({
+      city: that.data.city
+    })
+  },
+
+  /**
+   * 地理位置回调
+   */
+  cb_location: function(res, opt) {
+    var that = this;
+    // 页面传值
+    if (res.cityId && res.cityId != that.data.city.cityId) {
+      that.data.city = res;
+      that.setCity();
+      that.wxapi.serieByPinyin(that.data.pinyin, { city_id: res.cityId }, 'cb_serieInfo');
+    }
+  },
+
+  /**
+   * 车系详情回调方法
+   */
+  cb_serieInfo: function(res, opt) {
+    var that = this;
+    
+    // 隐藏loading弹窗
+    wx.hideLoading();
+
+    if (res.code==0) {
+      that.data.detailData = res.data;
+      that.data.carsData = res.data.cars;
+      that.data.picpinyin = res.data.chexi_pinyin;
+      that.data.cxid = res.data.cxid;
+
+      // 设置分享标题、地址、图片
+      that.shareObj.setShare(
+        that.data.detailData.name + '-电动邦', 
+        '/pages/details/details?pinyin=' + that.data.pinyin,
+        that.data.detailData.focus
+      );
+
+      // 车系收藏判断
+      that.data.fav.serie = 0;
+      if (that.fav.serieIds.length > 0) {
+        var serieIds = ',' + that.fav.serieIds.join(',');
+        if (serieIds.toString().indexOf(',' + that.data.cxid + '_0') >= 0) {
+          that.data.fav.serie = 1;
+        }
+      }
+
+      // 车型收藏
+      that.favCarList(1);
+
+      // 车系收藏
+      that.favSerieList();
+
+      that.setData({//逻辑层到视图层
+        detailData: that.data.detailData,
+        carsData: that.data.carsData,
+        carDatalen: that.data.carsData.length,
+        city: that.data.city,
+        picpinyin: that.data.picpinyin,
+        cxid: that.data.cxid,
+      });
+
+      // 设置收藏统一变量
+      that.setTipsData();
+
+      wx.setNavigationBarTitle({
+        title: that.data.detailData.name
+      });
+    } else {
+
+    }
+  },
+
   onShareAppMessage: function (options) {
     var that = this;
     if (options.from === 'button') {
@@ -182,19 +225,39 @@ Page({
     } else {
       console.log('右上角转发');
     }
-    return {
-      title: that.data.detailData.name+'-电动邦',
-      path: '/pages/details/details?pinyin=' + that.data.pinyin,
-      imageUrl: that.data.detailData.focus,
-      success: function (res) {
-        console.log('分享成功');
-      },
-      fail: function (res) {
-        console.log('分享失败');
-      }
-    }
+    return that.shareObj.getShare();
   },
+  scroll: function (e) {
+    var that = this;
+    if (e.detail.scrollTop > that.data.winWidth-10) {
+      var minscroll = that.data.winHeight*2 -100
 
+      that.setData({
+        scrollHeight: 0,
+        scrollHeights: "height:" + minscroll +"rpx"
+      })
+    } else {
+      that.setData({
+        scrollHeight: -1,
+        scrollHeights:''
+      })
+    }
+
+    //分享
+    if (e.detail.deltaY < 0) {
+      //向上滑动
+      // console.log("向上")
+      that.shareObj.showShare();
+
+    } else {
+      //向下滑动
+      // console.log("向下")
+      that.shareObj.hideShare();
+    }
+
+
+
+  },
 
   swichNav: function (e) {
     var that = this;
@@ -210,16 +273,16 @@ Page({
   getitemtwo: function (e) {
     var that = this;
     that.setData({
-      swipercurrentt:1
+      swipercurrentt: 1
     })
   },
   getitemone: function (e) {
     var that = this;
     that.setData({
-      swipercurrentt:0
+      swipercurrentt: 0
     })
   },
-  bindChange:function(e){
+  bindChange: function (e) {
     var that = this;
     that.setData({
       currentTab: e.detail.current
@@ -229,7 +292,7 @@ Page({
   /**
    * 车系收藏列表
    */
-  favSerieList: function() {
+  favSerieList: function () {
     var that = this;
     if (that.data.cxid) {
       that.wxapi.favList('serie', 1, 50, 'cb_favSerieList');
@@ -237,11 +300,11 @@ Page({
   },
 
   // 车系收藏回调方法
-  cb_favSerieList: function(res, opt) {
+  cb_favSerieList: function (res, opt) {
     var that = this;
-    if (res.code==0) {
+    if (res.code == 0) {
       var len = res.data.length;
-      for (var i=0;i<len;i++) {
+      for (var i = 0; i < len; i++) {
         if (res.data[i]['cxid'] == that.data.cxid) {
           that.data.fav.serie = true;
         }
@@ -249,7 +312,7 @@ Page({
       that.setTipsData();
     }
   },
-  
+
 
   /**
    * 添加车系收藏
@@ -270,9 +333,9 @@ Page({
 
     // 添加收藏
     that.data.fav.serie = that.fav.addFav('serie', that.data.cxid, 0);
-    
+
     that.setTipsData();
-    
+
   },
 
   /**
@@ -287,11 +350,17 @@ Page({
     if (!validated) {
       return validated;
     }
-    
+
     // 删除收藏
     that.delfav = that.fav.remFav('serie', that.data.cxid, 0);
     that.data.fav.serie = false;
 
+    // 提醒
+    wx.showToast({
+      title: '取消收藏',
+      icon: 'success',
+      duration: 2000
+    })
     // 统一设置弹窗模板变量
     that.setTipsData();
   },
@@ -305,8 +374,6 @@ Page({
 
   mobileInputEvent: function (e) {
     var that = this;
-    // that.login.mobileInputEvent();
-    // console.log(e.detail.value);
     that.data.mobile = e.detail.value;
     that.setData({
       mobile: e.detail.value,
@@ -319,7 +386,7 @@ Page({
   codeInputEvent: function (e) {
     var that = this;
     that.data.verifyCode = e.detail.value;
-    // console.log(e.detail.value);
+    
     that.setData({
       verifyCode: e.detail.value
     })
@@ -370,25 +437,46 @@ Page({
    */
 
   // 设置弹窗统一模板变量
-  setTipsData: function() {
+  setTipsData: function (defaultSel) {
     var that = this;
-
     // 对比车型数量
     that.data.fav.carNum = that.data.fav.carList.length;
-    // 车型选中状态，车型id做为下标，值[1=收藏,2=选中]
-    that.data.fav.carIds = {};
-    if (that.data.fav.carNum) {
-      var selCarIds = ',' + that.data.fav.selCars.join(',') + ',';
-      for (var i = 0; i < that.data.fav.carNum; i++) {
-        var pzid = that.data.fav.carList[i]['pzid'];
-        that.data.fav.carIds[pzid] = selCarIds.indexOf(',' + pzid + ',') >= 0 ? 2 : 1;
+
+    // 1、默认选中
+    if (defaultSel && that.data.fav.defaultSelNum && !that.data.fav.selCars.length) {
+      // 选中that.data.defaultSelNum个车型
+      for (let k in that.data.fav.carList) {
+        if (that.data.fav.selCars.length < that.data.fav.defaultSelNum) {
+          // 设置选中状态
+          var pzid = that.data.fav.carList[k]['pzid'];
+          // 选中的车系id列表
+          that.data.fav.selCars.push(pzid);
+        }
       }
     }
-    
+    // 2、车型选中状态
+    var selCarIds = ',' + that.data.fav.selCars.join(',') + ',';
+    for (let i in that.data.fav.carList) {
+      // 车型id做为下标，值[1 = 收藏, 2 = 选中]
+      var pzid = that.data.fav.carList[i]['pzid'];
+      that.data.fav.carIds[pzid] = selCarIds.indexOf(',' + pzid + ',') >= 0 ? 2 : 1;
+    }
 
+    console.log(that.data.fav);
+    
+    // 设置模板统一变量
     that.setData({
-      tipsData: that.data.fav
-    })
+      tipsData: that.data.fav,
+      city: that.data.city,
+    });
+  },
+
+  // 设置车型对比选中状态
+  selCar: function() {
+    // 选中的车系id列表
+    that.data.fav.selCars.push(pzid);
+    // 设置选中状态
+    that.data.fav.carIds[pzid] = 2;
   },
 
   // 1. 添加车型对比
@@ -415,18 +503,22 @@ Page({
       that.fav.addFav('car', that.duibi.pzid, 0, 'cb_optCar');
     }
   },
-  
+
   // 添加/移除车型对比 [回调方法]
-  cb_optCar: function(res, opt){
+  cb_optCar: function (res, opt) {
     var that = this;
     // 隐藏loading弹窗
     wx.hideLoading();
-
+    
     // 消息提醒
     wx.showToast({
-      title: opt=='add'?'添加成功':'已取消',
+      title: opt == 'addFav' ? '添加成功' : '已取消',
     });
-    
+
+    //对比按钮变蓝
+    that.setData({
+      forbidOn: false
+    })
     that.favCarList();
   },
 
@@ -436,20 +528,64 @@ Page({
    */
   carTips: function () {
     var that = this;
+    // 无对比车型判断
+    if (that.data.fav.carList.length==0) {
+      wx.showToast({
+        title: '请选择对比车型',
+        image: '../images/warning.png',
+      });
 
-    // 手机号校验
-    // var validated = that.wxapi.validatedMobile();
-    // if (!validated) {
-    //   return validated;
-    // }
+
+       //对比按钮变灰
+      that.setData({
+        forbidOn:true
+      })
 
 
+      return false;
+    }
+
+    console.log(that.data.fav);
+
+    that.setData({
+      scrollBoolean:false
+    })
+
+    
     // 请求对比车型列表
-    that.favCarList();
+    //that.favCarList();
+   
 
+    // 显示弹层
+    that.showTips();
+    that.setTipsData(); 
+  },
+
+  // 显示车型对比弹层
+  showTips: function() {
+    var that = this;
     // 弹窗动画效果
     var detailWidth = that.data.winWidth * 0.8;
-    console.log('detailWidthdetailWidthdetailWidthdetailWidth---'+detailWidth)
+    
+    var animationContrast = wx.createAnimation({
+      duration: 300,
+      timingFunction: "linear",
+      delay: 0
+    });
+    that.animationContrast = animationContrast;
+    // 332
+    animationContrast.translateX(-detailWidth).step();
+
+    that.setData({
+      animationContrast: animationContrast.export(),
+      comparison: true
+    })
+  },
+
+  // 隐藏车型对比弹层
+  hideTips: function() {
+    var that = this;
+    var detailWidth = that.data.winWidth * 0.8;
     var animation = wx.createAnimation({
       duration: 300,
       timingFunction: "linear",
@@ -457,26 +593,38 @@ Page({
     });
     that.animation = animation;
     // 332
-    animation.translateX(-detailWidth).step();
+    animation.translateX(detailWidth).step();
+    that.setData({
+      animationContrast: animation.export(),
+      comparison: false
+    })
+
 
     that.setData({
-      animationData: animation.export(),
-      comparison: true
-    })
+      comparison: false
+    });
   },
 
 
 
   /**
    * 加载收藏车型列表
+   * 
+   * @param boolean defaultSel   [是否默认选中]
    */
-  favCarList: function () {
+  favCarList: function (defaultSel) {
     var that = this;
     // 重置数据
     that.data.fav.carList = [];
     that.data.fav.carNum = 0;
     that.data.fav.carIds = {};
     that.data.fav.selCars = [];
+
+    // 是否默认选中
+    if (typeof(defaultSel)!=undefined) {
+      that.data.fav.defaultSel = defaultSel;
+    }
+
     // 重新加载
     that.fav.favList('car', 1, 50, 'cb_carTips');
   },
@@ -484,17 +632,25 @@ Page({
   /**
    * 1.1.1 车型对比弹窗回调
    */
-  cb_carTips: function(res) {
+  cb_carTips: function (res) {
     var that = this;
-    if (res.code==0) {
+    that.data.fav.carList = [];
+    that.data.fav.carNum = 0;
+    if (res.code == 0) {
       // 对比车型列表
       that.data.fav.carList = res.data;
       
-      that.setTipsData();
+      // 设置是否默认选中
+      var defaultSel = typeof (that.data.fav.defaultSel) != 'undefined' ? typeof (that.data.fav.defaultSel) : 0;
+      that.data.fav.defaultSel = 0;
+
+      // 设置模板统一变量
+      that.setTipsData(defaultSel);
     } else {
+      that.setTipsData();
       // 接口异常提示
     }
-    
+
   },
 
   /**
@@ -502,8 +658,10 @@ Page({
    */
   selCars: function (e) {
     var that = this;
+    // 获取选中的车型id
     that.data.fav.selCars = e.detail.value;
-    
+
+    // 设置统一模板变量
     that.setTipsData();
   },
 
@@ -531,7 +689,7 @@ Page({
 
             // 重新加载列表
             that.data.interval.obj = setInterval(function () {
-              if (that.data.interval.num>=selLen) {
+              if (that.data.interval.num >= selLen) {
                 clearInterval(that.data.interval.obj);
                 that.data.interval.obj = '';
                 that.data.interval.num = 0;
@@ -542,6 +700,10 @@ Page({
                 wx.showToast({
                   title: '删除成功',
                 });
+                // 全部删除隐藏弹层
+                if (that.data.fav.carList.length == selLen) {
+                  that.hideTips();
+                }
 
                 // 重新加载车型列表
                 that.favCarList();
@@ -549,12 +711,12 @@ Page({
             }, 100);
 
             // 超时处理
-            setTimeout(function(){
+            setTimeout(function () {
               // 隐藏loading弹窗
               wx.hideLoading();
             }, 10000);
           }
-          
+
         }
       });
     }
@@ -562,7 +724,7 @@ Page({
   },
 
   // 2.1.1 删除车型回调方法
-  cb_remCars: function(res, opt) {
+  cb_remCars: function (res, opt) {
     var that = this;
     that.data.interval.num++;
     // 收藏的车型数量变更
@@ -572,26 +734,13 @@ Page({
   },
 
   // 2.2 关闭弹窗
-  cancel:function(){
+  cancel: function () {
     var that = this;
-    var detailWidth = that.data.winWidth * 0.8;
-    console.log('detailWidthdetailWidthdetailWidthdetailWidth---------'+detailWidth)
-
-    var animation = wx.createAnimation({
-      duration: 300,
-      timingFunction: "linear",
-      delay: 0
-    });
-    that.animation = animation;
-    // 332
-    animation.translateX(detailWidth).step();
-    that.setData({
-      animationData: animation.export()
-    })
-
+    
+    that.hideTips();
 
     that.setData({
-      comparison: false
+      scrollBoolean:true
     });
   },
 
@@ -605,10 +754,15 @@ Page({
   },
   picShow: function (opp) {
     var that = this;
-    console.log(that.data.cxid);
-    wx.navigateTo({
-      url: '../atlas/atlas?piccxid=' + that.data.cxid,
-    })
+    if (that.data.detailData.imgs_count){
+       wx.navigateTo({
+        url: '../atlas/atlas?piccxid=' + that.data.cxid,
+      })
+    }else{
+      return false;
+    }
+    
+    
   },
 
   cartypeShow: function (e) {
@@ -624,19 +778,28 @@ Page({
 
   goParam: function (e) {
     var that = this;
-    if (that.data.fav.selCars.length>0) {
+    var selLen = that.data.fav.selCars.length;
+    if (!selLen || selLen > 5) {
+      var msg = !selLen ? '请选择对比车型' : '最多选择5辆车进行对比哦';
+      wx.showToast({
+        title: msg,
+        image: '../images/warning.png'
+      });
+      return false;
+    }
+    
       wx.navigateTo({
         url: '../parameter/parameter?pzid=' + that.data.fav.selCars.join(','),
-      })
-    } else {
+      });
 
-    }
+      // setTimeout(function () {
+      //   that.cancel();
+      // }, 1000);
   },
 
 
   parameters: function (e) {
     var that = this;
-    console.log(e);
     var pzid = e.currentTarget.dataset.pzid;
     if (pzid > 0) {
       wx.navigateTo({

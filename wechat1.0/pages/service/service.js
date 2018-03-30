@@ -1,4 +1,5 @@
 // pages/service/service.js
+import { share } from '../../plugins/share';
 var app = getApp();
 Page({
 
@@ -6,13 +7,31 @@ Page({
    * 页面的初始数据
    */
   data: {
-    infoService:''
+    infoService:'',
+    //分享
+    shareclientYstart: '',
+    shareclientYmove: '',
+    winWidth:''
+
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    var that = this;
+
+    //初始化分享
+    that.shareObj = new share(that);
+
+    // 设置分享内容
+    that.shareObj.setShare('电动邦微信客服', '/pages/service/service');
+
+    wx.getSystemInfo({
+      success: function (res) {
+        that.data.winWidth = res.windowWidth;
+      }
+    });
   
   },
 
@@ -54,25 +73,47 @@ Page({
     })
   },
 
+  handletouchstart: function (event) {
+    var that = this;
+    that.data.shareclientYstart = event.touches[0].clientY;
+
+  },
+  handletouchmove: function (event) {
+    var that = this;
+
+    that.data.shareclientYmove = event.touches[0].clientY;
+
+
+    if (that.data.shareclientYstart > that.data.shareclientYmove) {
+      //向上滑动
+      console.log("向上")
+      that.shareObj.showShare();
+
+    } else {
+      //向下滑动
+      console.log("向下")
+      that.shareObj.hideShare();
+    }
+  },
+
+  // 页面停止，静止3秒
+  handletouchend: function () {
+    var that = this;
+    that.shareObj.handletouchend();
+  },
+
 
   /**
    * 用户点击右上角分享
    */
+
   onShareAppMessage: function (options) {
+    var that = this;
     if (options.from === 'button') {
       console.log('按钮转发');
     } else {
       console.log('右上角转发');
     }
-    return {
-      title: '电动邦微信客服',
-      path: '/pages/service/service',
-      success: function (res) {
-        console.log('分享成功');
-      },
-      fail: function (res) {
-        console.log('分享失败');
-      }
-    }
-  }
+    return that.shareObj.getShare();
+  },
 })

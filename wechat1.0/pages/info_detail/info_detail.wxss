@@ -12,7 +12,8 @@
   bottom: 126rpx;
   font-size: 24rpx;
   color: #fff;
-  left: -19%;
+  z-index: 11111;
+  left:0;
   line-height: 60rpx;
 }
 
@@ -80,6 +81,7 @@
   color: #6d6d6d;
   line-height: 57.367rpx;
   margin: 24.155rpx 0;
+  /* text-indent: 48rpx; */
 }
 
 .info_conttext_img {

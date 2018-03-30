@@ -2,26 +2,7 @@
 @import "../inc/inc.wxss";
  /* 个人中心  */
 
-.sharebtn {
-  /* animation: kf-marque-animation 3s linear infinite; */
-  background: #33adff;
-  padding: 0 30rpx 0 20rpx;
-  box-shadow: 0 4rpx 12rpx 0 rgba(50, 173, 255, 0.30);
-  border-radius: 0 200rpx 200rpx 0;
-  /* width:280rpx;  */
-  height: 60rpx;
-  position: fixed;
-  bottom: 40rpx;
-  font-size: 24rpx;
-  color: #fff;
-  left: -19%; 
-  line-height: 60rpx
-}
 
-.sharebtnicon {
-  width: 36rpx;
-  margin:0 0 5rpx 12rpx;
-}
 
  .head{
    width: 100%;

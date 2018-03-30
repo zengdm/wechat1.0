@@ -22,6 +22,8 @@ Page({
     isTo: false,
     kong: -1,
     chooseData: '',
+    totalRowsData:'',
+
   },
   js_touchstart(e) {
     this.selectInterval.move(e.changedTouches[0].x, e.changedTouches[0].y);
@@ -60,10 +62,10 @@ Page({
     that.selectInterval = new SelectInterval({
       canvasId: 'canvas',
       canvasHeight: 155,
-      Xaxis: { left: 60, right: 330 },
-      scale: [0, 10, 20, 30, 40, 50],
+      Xaxis: { left:30, right: 315 },
+      scale: [0, 10, 20, 30, 40, 50, 60],
       Yaxis: [90, 2],
-      bothEndsNear: 25,
+      bothEndsNear: 60,
       // decimalPoint:10,
       // rightSliderStop:true,
       showTitle: {
@@ -74,9 +76,9 @@ Page({
       },
       scaleIn: {
         name: '',
-        size: 22,
+        size: 18,
         valueY: 195,
-        pointY: 195
+        pointY: 195     
       },
       colour: {
         title: '#33adff',
@@ -117,10 +119,10 @@ Page({
     that.selectInterval = new SelectInterval({
       canvasId: 'canvas',
       canvasHeight: 155,
-      Xaxis: { left: 60, right: 330 },
-      scale: [0, 10, 20, 30, 40, 50],
+      Xaxis: { left: 30, right: 315 },
+      scale: [0, 10, 20, 30, 40, 50, 60],
       Yaxis: [90, 2],
-      bothEndsNear: 25,
+      bothEndsNear:60,
       // decimalPoint:10,
       // rightSliderStop:true,
       showTitle: {
@@ -131,7 +133,7 @@ Page({
       },
       scaleIn: {
         name: '',
-        size: 22,
+        size: 18,
         valueY: 195,
         pointY: 195
       },
@@ -166,11 +168,15 @@ Page({
   },
   backChoose: function (res) {
     var that = this;
+    
     that.data.driveparaData = res.drivepara || res.data.drivepara;
     that.data.priceparaData = res.pricepara || res.data.pricepara;
     that.data.enduranceparaData = res.endurancepara || res.data.endurancepara;
     that.data.carTypeparaData = res.carTypepara || res.data.carTypepara;
-    that.data.carsnumber = res.count || res.data.count;
+    that.data.carsnumber = 0;
+    if (res.count || res.data.count) {
+      that.data.carsnumber = res.count || res.data.count;
+    }
     that.setData({//逻辑层到视图层
       driveparaData: that.data.driveparaData,
       priceparaData: that.data.priceparaData,
@@ -293,8 +299,8 @@ Page({
       key: "choosecarTypeparalen",
       data: checkedValues.length
     });
-    // console.log(checkedValues)
-    that.data.lbvalData = checkedValues.join("|");
+    console.log(checkedValues)
+    that.data.lbvalData = checkedValues.join(",");
     that.searchapi()
   },
   searchapi: function (e) {
@@ -333,6 +339,21 @@ Page({
         // console.log(datas)
         // console.log(res)
         that.data.carsnumber = res.data.data.totalRows;
+        // console.log(res.data.data.totalRows);
+        // that.data.totalRowsData = res.data.data.totalRows;
+       
+
+
+        // if (that.data.totalRowsData == 0) {
+        //   that.setData({//逻辑层到视图层
+        //     btnforbid: 0,
+        //   });
+        // }else{
+        //   that.setData({//逻辑层到视图层
+        //     btnforbid:-1,
+        //   });
+        // }
+
         that.setData({//逻辑层到视图层
           carsnumber: that.data.carsnumber,
         });
@@ -354,13 +375,23 @@ Page({
     if (that.data.lbvalData == '') {
       that.data.lbvalData = "undefined";
     };
-    wx.redirectTo({
-      url: '../condition/condition?pricepara=' + that.data.jgvalData +
-      '&drivepara=' + that.data.lxvalData +
-      '&endurancepara=' + that.data.xhvalData +
-      '&carTypepara=' + that.data.lbvalData +
-      '&carsnumber=' + that.data.carsnumber,
-    })
+    
+    if (that.data.carsnumber > 0) {
+      // that.setData({//逻辑层到视图层
+      //   btnforbid: 0,
+      // });
+      // that.setData({//逻辑层到视图层
+      //   btnforbid: -1,
+      // });
+      wx.redirectTo({
+        url: '../condition/condition?pricepara=' + that.data.jgvalData +
+        '&drivepara=' + that.data.lxvalData +
+        '&endurancepara=' + that.data.xhvalData +
+        '&carTypepara=' + that.data.lbvalData +
+        '&carsnumber=' + that.data.carsnumber,
+      })
+    }
+    
   },
 
 });

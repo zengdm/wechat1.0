@@ -6,7 +6,12 @@
 }
 /* 标签切换--S */
 
+.main-scroll{
+  margin-top: 82rpx;
+}
+
 .swiper-tab {
+  width: 100%;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -18,6 +23,8 @@
   font-size: 34rpx;
   border-bottom: solid 1rpx #e6e6e6;
   background-color: #fafafa;
+  position: fixed;
+  z-index: 3000;
 }
 .collectnot{
    background:#f8f8f8;
@@ -114,13 +121,15 @@ text-align: center;
   /* font-size: 0; */
 }
 .drawer-info > text {
-  max-width: 310rpx;
+  max-width: 290rpx;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
   display: inline-block;
   font-size: 34rpx;
   color: #333;
+  padding-right: 20rpx;
+  box-sizing: border-box;
 }
 
 .drawer-title{
@@ -150,7 +159,6 @@ display: -webkit-box;
 .drawer-info-price-no {
   font-size: 28rpx;
   color: #ccc;
-  padding-top: 20rpx;
 }
 
 .drawer-price {
@@ -202,6 +210,7 @@ display: -webkit-box;
   padding: 0 6rpx;
 }
 .drawer-title-info{
+  width: 430rpx;
   display: -webkit-box;
   -webkit-box-orient: horizontal;
   font-size:24rpx;
@@ -213,7 +222,7 @@ bottom: -72rpx;
    display: -webkit-box;
   -webkit-box-orient: horizontal;
   -webkit-box-flex: 1;
-  margin-right: 140rpx;
+  /* margin-right: 140rpx; */
 }
 .drawer-title-info-read{
   /* font-size: 24rpx;
@@ -226,7 +235,7 @@ bottom: -72rpx;
     margin-bottom: 4rpx;
 }
 .drawer-title-info-comment{
-  margin-left: 18rpx;
+  margin-left: 28rpx;
   /* font-size:24rpx; */
   color:#33adff;
 }

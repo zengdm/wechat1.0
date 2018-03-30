@@ -1,4 +1,5 @@
-import xapi from "../../../utils/xapi"
+import xapi from "../../../utils/xapi";
+import { share } from '../../../plugins/share';
 var app = getApp();
 Page({
   data: {
@@ -16,9 +17,17 @@ Page({
     hasMoreData: true,
     loading: false,
     // currentTabtype: 0,
+
   },
   onLoad: function () {
     var that = this;
+
+
+    //初始化分享
+    that.shareObj = new share(that);
+
+    // 设置分享内容
+    that.shareObj.setShare('新能源车即将上市-电动邦', '/pages/choose_car/coming_soon/coming_soon');
     wx.getSystemInfo({
       success: function (res) {
         that.setData({
@@ -35,74 +44,37 @@ Page({
   },
 
 
-  scroll: function (e) {
+  scroll:function(e){
     var that = this;
-    console.log('scroll:-------' + e.detail.scrollTop);
-    var scrollTop = e.detail.scrollTop;
-    var newsOne = that.data.winHeight * 1.5;
-    var newsTwo = that.data.winHeight * 2.5;
-    console.log('winWidthwinWidthwinWidthwinWidthwinWidth----------' + that.data.winWidth);
-    var newsWidth = that.data.winWidth * 0.19;
+    if (e.detail.deltaY < 0) {
+      //向上滑动
+      console.log("向上")
+      that.shareObj.showShare();
 
-
-    if (newsOne <= scrollTop && scrollTop <= newsTwo) {
-      // console.log('---------------------------------------------showshowshow----------------------------');
-
-      var animation = wx.createAnimation({
-        duration: 300,
-        timingFunction: "linear",
-        delay: 0
-      });
-      that.animation = animation;
-      // 332
-      animation.translateX(newsWidth).step();
-      that.setData({
-        animationData: animation.export()
-      })
-      that.setData({
-        showShare: true
-      })
-
-    } else {
-
-      var animation = wx.createAnimation({
-        duration: 300,
-        timingFunction: "linear",
-        delay: 0
-      });
-      that.animation = animation;
-      // 332
-      animation.translateX(0).step();
-      that.setData({
-        animationData: animation.export()
-      })
-      that.setData({
-        showShare: false
-      })
+    } else{
+      //向下滑动
+      console.log("向下")
+      that.shareObj.hideShare();
     }
+  },
 
 
+  // 页面停止，静止3秒
+  handletouchend: function () {
+    var that = this;
+    that.shareObj.handletouchend();
   },
 
 
 
-
   onShareAppMessage: function (options) {
+    var that = this;
     if (options.from === 'button') {
       console.log('按钮转发');
     } else {
       console.log('右上角转发');
     }
-    return {
-      title: '新能源车即将上市-电动邦',
-      path: '/pages/choose_car/coming_soon/coming_soon',
-      success: function (res) {
-        console.log('分享成功');
-      },
-      fail: function (res) {
-        console.log('分享失败');
-      }
-    }
+    return that.shareObj.getShare();
   },
 
 
@@ -168,7 +140,7 @@ Page({
       that.getEndurance(that);
     } else {
       wx.showToast({
-        title: '没有更多数据了',
+        title: '好厉害，全都看完了',
       })
     }
 

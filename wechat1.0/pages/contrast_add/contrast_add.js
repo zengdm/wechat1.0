@@ -3,6 +3,7 @@ import {wxapi} from "../../plugins/wxapi"
 import drawer from '../../pages/drawer/drawer.js'
 import xapi from "../../utils/xapi"
 import util from "../../utils/util"
+import { favorite } from "../../plugins/favorite"
 
 var app = getApp();
 Page({
@@ -36,6 +37,7 @@ Page({
     that.dw = new drawer(that);
     that.ul = new util(that);
     that.wxapi = new wxapi(that);
+    that.fav = new favorite(that);
     // console.log(that.wxapi.getUserToken());
   },
   onReady: function () {
@@ -49,14 +51,11 @@ Page({
       // console.log(res);
 
       var rdata = res.data;
-      // console.log(rdata);
 
       that.data.brandData = rdata.data;
       var myList = rdata.data.list;
 
       that.data.brandList = that.reCombine(myList);
-      console.log(that.data.brandData)
-      console.log(that.data.brandList)
 
       that.setData({//逻辑层到视图层
         brandData: that.data.brandData,
@@ -161,32 +160,15 @@ Page({
   chooseList:function(e){
       var that = this;
       // that.getUserInfo();
-      console.log(that.wxapi.getLoginToken());
       var pzid = e.currentTarget.dataset.pzid;
+      
+      that.fav.addFav('car', pzid, 0, 'cb_choose');
+  },
 
-      wx.request({
-        url: app.apiHost + '/passport/ark/addUserCore',
-        method: "POST",
-        data: {
-          token: that.wxapi.getLoginToken(),
-          sourceid: pzid,
-          platid: 0,
-          ftype: 'car',
-        },
-        header: {
-          'content-type': 'application/json'
-        },
-        complete: function (res) {
-          // console.log(res.data)
-        },
-        success: function (res) {
-          console.log(res);
-
-        }
-      })
-      wx.navigateBack({
-        url: '/pages/contrast/contrast'
-      })
+  cb_choose: function(res, opt) {
+    wx.navigateBack({
+      url: '/pages/contrast/contrast'
+    })
   },
 
   gotoSeries: function (e) {

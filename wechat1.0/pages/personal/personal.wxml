@@ -1,5 +1,6 @@
 <!--personal.wxml-->
 <!-- 个人中心 -->
+<view bindtouchstart="handletouchstart" bindtouchmove="handletouchmove" bindtouchend="handletouchend">
 <view class='head'>
   <view class='head-img'>
     <block wx:if="{{userInfo.avatarUrl}}">
@@ -14,7 +15,7 @@
     <view class='head-name'>{{userInfo.nickName}}</view>
   </block>
   <block wx:else>
-    <view class='head-name'>登录</view>
+    <view class='head-name'  bindtap='redelegation'>登录</view>
   </block>
 </view>
 
@@ -71,6 +72,7 @@
     </view>
 
   </view>
+</view>
 </view>
 
 <button animation="{{animationData}}" class="sharebtn" open-type="share">

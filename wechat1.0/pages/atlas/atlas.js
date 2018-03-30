@@ -58,6 +58,7 @@ Page({
   },
   bindPic: function (e) {
     var that = this;
+    console.log(e)
     that.data.tinyIndex = 0;
     that.setData({
       currentTab: e.detail.current,
@@ -68,8 +69,8 @@ Page({
   swiperChange: function (e) {
     var that = this
     that.data.current = e.detail.current;
-    console.log('swiper.swper----' + e.detail.current);
-    that.data.tinyIndex = e.detail.current
+    // console.log('swiper.swper----' + e.detail.current);
+    that.data.tinyIndex = e.detail.current;
     if (this.data.imgTab === that.data.tinyIndex) {
       return false;
     }
@@ -77,6 +78,18 @@ Page({
       that.setData({
         imgTab: that.data.tinyIndex
       })
+    }
+    console.log(that.data.current);
+    console.log(that.data.current);
+    console.log(that.data.pageSize);
+    console.log(that.data.page);
+
+    if (that.data.current == (that.data.pageSize - 1) * (that.data.page - 1) ){
+      console.log('qqqqqqq');
+      console.log(that.data.current);
+      console.log(that.data.pageSize);
+      console.log(that.data.page);
+      that.loadPageImg(that.data.page);
     }
 
     this.setData({
@@ -144,6 +157,7 @@ Page({
         // var rdata = res.data;
         pagePicture = res.data.data;
         console.log(pagePicture);
+        
 
         var tempImgArr = [];
         for (var pk = 0; pk < pagePicture.length; pk++) {
@@ -167,6 +181,7 @@ Page({
         that.setData({//逻辑层到视图层
           picture: that.data.pictureArr,
           imgArr: that.data.imgArr,
+          pagePicture: pagePicture
         });
         that.data.loadingLock = 0;
         that.data.page += 1;

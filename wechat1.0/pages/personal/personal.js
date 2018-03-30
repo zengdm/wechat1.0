@@ -1,6 +1,7 @@
 var app = getApp();
 import { login } from '../../plugins/login';
 import { wxapi } from '../../plugins/wxapi';
+import { share } from '../../plugins/share';
 
 
 Page({
@@ -18,13 +19,22 @@ Page({
     error: false,
     accredit: '',
     // 当前登录信息
-    userInfo:{}
+    userInfo:{},
+    //分享
+    shareclientYstart: '',
+    shareclientYmove: '',
+
   },
   onLoad: function (options) {
     // 页面初始化 options为页面跳转所带来的参数
     var that = this;
     that.login = new login(that);
     that.wxapi = new wxapi(that);
+    //初始化分享
+    that.shareObj = new share(that);
+
+    // 设置分享内容
+    that.shareObj.setShare('电动邦，带您一起了解新能源汽车、用好新能源车、玩好新能源汽车！', '/pages/personal/personal');
     
     wx.getSystemInfo({
       success: function (res) {
@@ -34,6 +44,74 @@ Page({
         });
       }
     });
+
+    // wx.login({
+    //   success: function (result) {
+    //     console.log(result);
+    //     var code = result.code;
+    //     that.data.code = code;
+
+    //     wx.getUserInfo({
+    //       success: function (res) {
+
+
+    //         var encryptedData = res.encryptedData;
+    //         var iv = res.iv;
+    //         // that.ifBind(that);
+
+    //         console.log(res);
+    //         var userInfo = res.userInfo
+    //         var nickName = userInfo.nickName
+    //         var avatarUrl = userInfo.avatarUrl
+    //         that.setData({
+    //           nickName: nickName,
+    //           avatarUrl: avatarUrl
+    //         });
+
+    //       }, fail: function () {
+
+    //         wx.showModal({
+    //           title: '警告',
+    //           content: '您点击了拒绝授权,将无法正常显示个人信息,点击确定重新获取授权。',
+    //           success: function (res) {
+    //             console.log(res);
+
+    //             if (res.confirm) {
+    //               wx.openSetting({
+    //                 success: (res) => {
+    //                   wx.getUserInfo({
+
+    //                     success: function (res) {
+    //                       var encryptedData = res.encryptedData;
+    //                       that.data.encryptedData = encryptedData;
+    //                       var iv = res.iv;
+    //                       that.data.iv = iv;
+
+    //                       that.ifBind(that);
+
+    //                       var userInfo = res.userInfo;
+    //                       that.setData({
+    //                         nickName: userInfo.nickName,
+    //                         avatarUrl: userInfo.avatarUrl,
+    //                       })
+    //                     },fail:function(res){
+    //                         console.log('取消授权');
+    //                     }
+    //                   })
+
+    //                 }
+    //               })
+    //             }
+    //           }
+    //         })
+    //       }
+    //     })
+
+    //   },
+    // })
+
+
+
   },
 
   onReady: function () {
@@ -113,66 +191,47 @@ Page({
     
   },
 
+  handletouchstart: function (event) {
+    var that = this;
+    that.data.shareclientYstart = event.touches[0].clientY;
+
+  },
+  handletouchmove: function (event) {
+    var that = this;
+
+    that.data.shareclientYmove = event.touches[0].clientY;
+
+
+    if (that.data.shareclientYstart > that.data.shareclientYmove) {
+      //向上滑动
+      console.log("向上")
+      that.shareObj.showShare();
+
+    } else {
+      //向下滑动
+      console.log("向下")
+      that.shareObj.hideShare();
+    }
+  },
+
+  // 页面停止，静止3秒
+  handletouchend: function () {
+    var that = this;
+    that.shareObj.handletouchend();
+  },
+
 
   onShareAppMessage: function (options) {
+    var that = this;
     if (options.from === 'button') {
       console.log('按钮转发');
     } else {
       console.log('右上角转发');
     }
-    return {
-      title: '电动邦，带您一起了解新能源汽车、用好新能源车、玩好新能源汽车！',
-      path: '/pages/personal/personal',
-      success: function (res) {
-        console.log('分享成功');
-      },
-      fail: function (res) {
-        console.log('分享失败');
-      }
-    }
+    return that.shareObj.getShare();
   },
 
-
-  ifBind: function (that) {
-    var that = this;
-    // that.wxapi.wxlogin();
-    wx.request({
-      url: 'http://item.diandong.com/passport/clientapi/wxxcxLog',
-      method: "POST",
-      data: {
-        code: that.data.code,
-        type: 'xcx',
-        encryptedData: that.data.encryptedData,
-        iv: that.data.iv,
-      },
-      header: {
-        'content-type': 'application/json',
-      },
-      complete: function (resp) {
-        // console.log(res)
-      },
-      success: function (resp) {
-        console.log(resp);
-        console.log(resp.data.data.has_mobile);
-
-        wx.setStorage({
-          key: 'key',
-          data: {
-            openid: resp.data.data.data.openid,
-            session_key: resp.data.data.data.session_key,
-            unionId: resp.data.data.data.unionId,
-            has_mobile: resp.data.data.has_mobile,
-            token: resp.data.data.token
-          }
-        })
-
-        // wx.clearStorage()
-      }
-    })
-
-  },
  
-
   myCollect: function (e) {
     var that = this;
     // 用户授权信息判断

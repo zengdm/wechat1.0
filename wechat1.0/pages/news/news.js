@@ -10,9 +10,6 @@ var requestUrl = app.apiHost + "/app/feed/flist";
 
 // 请求数据
 var loadMore = function (that) {
-  // that.setData({
-  //   hidden: false
-  // });
   setTimeout(function () {
     loading = false;
   }, 5000);
@@ -52,8 +49,6 @@ var loadMore = function (that) {
           }
         }
 
-        // console.log(that.data.points);
-
         // console.log(rList);
         that.data.lastTime = rData.pageArgs.lastTime;
         that.data.lastFeedId = rData.pageArgs.lastFeedId;
@@ -71,8 +66,12 @@ var loadMore = function (that) {
 
 };
 
+// 点击量统计(fuqiang)
+import { points } from '../../plugins/points';
+import { share } from '../../plugins/share';
 
 Page({
+  // interval: { obj: '', num: 0 },
   data: {
     autoplay: false,
     swiperCurrent: 0,
@@ -88,61 +87,84 @@ Page({
     lastFeedId: '',
     // 流量统计计数
     points: {},
+    shareclientYstart: '',
+    shareclientYmove: '',
+   
   },
+
+  onLoad: function () {
+
+    var that = this;
+    // 点击量统计
+    that.pointsObj = new points(that);
+    that.shareObj = new share(that);
+    
+    // 设置分享内容
+    that.shareObj.setShare('电动邦，带您一起了解新能源汽车、用好新能源车、玩好新能源汽车！', '/pages/news/news');
+
+    wx.getSystemInfo({
+      success: function (res) {
+        that.setData({
+          winWidth: res.windowWidth,
+          winHeight: res.windowHeight
+        });
+      }
+    });
+
+    loadMore(that);
+
+    wx.request({
+      url: app.apiHost + '/app/focus/focuslist?platid=8',
+      success: function (res) {
+        that.data.focusImg = res.data.data;
+        console.log(res.data.data)
+
+        that.setData({//逻辑层到视图层
+          focusImg: that.data.focusImg
+        });
+      },
+
+    });
+
+  },
+
+
+  handletouchstart: function (event) {
+    var that = this;
+    that.data.shareclientYstart = event.touches[0].clientY;
+
+  },
+  handletouchmove: function (event) {
+    var that = this;
+
+    that.data.shareclientYmove = event.touches[0].clientY;
+
+
+    if (that.data.shareclientYstart > that.data.shareclientYmove) {
+      //向上滑动
+      console.log("向上")
+      that.shareObj.showShare();
+      
+    } else {
+      //向下滑动
+      console.log("向下")
+      that.shareObj.hideShare();
+    }
+  },
+
+  // 页面停止，静止3秒
+  handletouchend: function () {
+    var that = this;
+    that.shareObj.handletouchend();
+  },
+
   swiperChange: function (e) {
     console.log('swiperChange:' + e.detail.current);
     this.setData({
       swiperCurrent: e.detail.current
     })
   },
-  scroll: function (e) {
-    var that = this;
-    // console.log('scroll:-------' + e.detail.scrollTop);
-    var scrollTop = e.detail.scrollTop;
-    var newsOne = that.data.winHeight * 1.5;
-    var newsTwo = that.data.winHeight * 2.5;
-    // console.log('winWidthwinWidthwinWidthwinWidthwinWidth----------' + that.data.winWidth);
-    var newsWidth = that.data.winWidth * 0.19;
 
-
-    if (newsOne <= scrollTop && scrollTop <= newsTwo) {
-      // console.log('---------------------------------------------showshowshow----------------------------');
-
-      var animation = wx.createAnimation({
-        duration: 300,
-        timingFunction: "linear",
-        delay: 0
-      });
-      that.animation = animation;
-      // 332
-      animation.translateX(newsWidth).step();
-      that.setData({
-        animationData: animation.export()
-      })
-      that.setData({
-        showShare: true
-      })
-
-    } else {
-
-      var animation = wx.createAnimation({
-        duration: 300,
-        timingFunction: "linear",
-        delay: 0
-      });
-      that.animation = animation;
-      // 332
-      animation.translateX(0).step();
-      that.setData({
-        animationData: animation.export()
-      })
-      that.setData({
-        showShare: false
-      })
-    }
-
-
-  },
   scrolltolower: function (e) {
     var that = this;
     // loadMore(that);
@@ -188,48 +210,43 @@ Page({
       platid: e.currentTarget.dataset.platid,
       sourceid: e.currentTarget.dataset.sourceid
     };
-    console.log("datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadata");
-    console.log(e);
-    // 设置浏览量
-    if (that.data.points[data.feedid]) {
-      that.data.points[data.feedid]['pv']++;
-      that.setData({
-        points: that.data.points
-      })
-    }
+
     // console.log(data);
     wx.navigateTo({
-      url: '../info_detail/info_detail?feedid=' + e.currentTarget.dataset.feedid
+      url: '../info_detail/info_detail?platid=' + data.platid + '&sourceid=' + data.sourceid + '&feedid=' + data.feedid
     })
   },
-  onLoad: function () {
+  
 
+  onShow: function() {
     var that = this;
 
-    wx.getSystemInfo({
-      success: function (res) {
-        that.setData({
-          winWidth: res.windowWidth,
-          winHeight: res.windowHeight
-        });
-      }
+    // 统计量
+    that.loadPoints();
+  },
+
+  /**
+   * 加载统计量
+   */
+  loadPoints: function() {
+    var that = this;
+    var points = that.pointsObj.getPoints();
+    if (points.feedid > 0) {
+      var feedid = points.feedid;
+      // 点击量
+      that.data.points[feedid]['pv'] = parseInt(that.data.points[feedid]['pv']) + parseInt(points.pv);
+      // 回帖量
+      that.data.points[feedid]['replies'] = parseInt(that.data.points[feedid]['replies']) + parseInt(points.replies);
+
+      console.log('new points');
+      console.log(that.data.points[feedid]);
+    }
+    // 清除统计
+    that.pointsObj.clearPoints();
+    // 设置模板统计值
+    that.setData({
+      points: that.data.points
     });
-
-    loadMore(that);
-
-    wx.request({
-      url: app.apiHost + '/app/focus/focuslist?platid=8',
-      success: function (res) {
-        that.data.focusImg = res.data.data;
-        console.log(res.data.data)
-
-        that.setData({//逻辑层到视图层
-          focusImg: that.data.focusImg
-        });
-      },
-
-    });
-
   },
 
   // onPageScroll:function(){
@@ -255,21 +272,23 @@ Page({
   },
 
   onShareAppMessage: function (options) {
+    var that = this;
     if (options.from === 'button') {
       console.log('按钮转发');
     } else {
       console.log('右上角转发');
     }
-    return {
-      title: '电动邦，带您一起了解新能源汽车、用好新能源车、玩好新能源汽车！',
-      path: '/pages/news/news',
-      success: function (res) {
-        console.log('分享成功');
-      },
-      fail: function (res) {
-        console.log('分享失败');
-      }
-    }
+    return that.shareObj.getShare();
+    // return {
+    //   title: '电动邦，带您一起了解新能源汽车、用好新能源车、玩好新能源汽车！',
+    //   path: '/pages/news/news',
+    //   success: function (res) {
+    //     console.log('分享成功');
+    //   },
+    //   fail: function (res) {
+    //     console.log('分享失败');
+    //   }
+    // }
   },
 
 

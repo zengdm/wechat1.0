@@ -32,7 +32,6 @@ Page({
     islx: false,
     isxh: false,
     islb: false,
-    hidden: true,
     page: 0,
     pageSize: 10,
     pageOffset: 0,
@@ -40,19 +39,22 @@ Page({
     orderseq: "desc",
     MoreData: true,
   },
-  touchStart:function(){
+  touchStart: function () {
+    var that = this;
     that.setData({
       show: that.data.kong,
       showmask: -1
     })
   },
   touchMove: function () {
+    var that = this;
     that.setData({
       show: that.data.kong,
       showmask: -1
     })
   },
   touchEnd: function () {
+    var that = this;
     that.setData({
       show: that.data.kong,
       showmask: -1
@@ -92,57 +94,10 @@ Page({
     that.selectInterval = new SelectInterval({
       canvasId: 'canvasone',
       canvasHeight: 140,
-      Xaxis: { left: 20, right: 330 },
-      scale: [0, 10, 20, 30, 40, 50],
-      Yaxis: [70, 8],
-      bothEndsNear: 25,
-      // decimalPoint:10,
-      // rightSliderStop:true,
-      showTitle: {
-        name: '万',
-        size: 15,
-        positionX: 75,
-        positionY: 30
-      },
-      scaleIn: {
-        name: '',
-        size: 10,
-        valueY: 55,
-        pointY: 63
-      },
-      colour: {
-        title: '#33adff',
-        colorBar: ['#e5e5e5', '#33adff'],
-        roundColor: ['#ffffff', '#e5e5e5'],
-        scale: ['#000000', '#999999']
-      },
-      // selectedInterval: {
-      //   min: 0,
-      //   max: 50
-      // },
-      round: {
-        radius: 10,
-        edgeLine: 2
-      },
-      image: {
-        url: '../images/picker.png',
-        width: 32,
-        height: 42
-      },
-      followValue: {
-        color: '#ffffff',
-        size: 15,
-        leftY: 111,
-        rightY: 111
-      }
-    });
-    that.selectInterval = new SelectInterval({
-      canvasId: 'canvasone',
-      canvasHeight: 140,
-      Xaxis: { left: 20, right: 330 },
-      scale: [0, 10, 20, 30, 40, 50],
+      Xaxis: { left: 30, right: 315 },
+      scale: [0, 10, 20, 30, 40, 50, 60],
       Yaxis: [90, 2],
-      bothEndsNear: 25,
+      bothEndsNear: 60,
       // decimalPoint:10,
       // rightSliderStop:true,
       showTitle: {
@@ -188,22 +143,20 @@ Page({
       myData: options
     });
     console.log(that.data.myData.pricepara)
-    if (that.data.myData.pricepara == "undefined") {
-      console.log("77777777777777")
+    if (that.data.myData.pricepara == "undefined" || that.data.myData.pricepara == "0,99999") {
       that.setData({
         isjg: true
       });
     } else {
-      console.log("6777777777777777")
       wx.getStorage({
         key: 'choosepricepara',
         success: function (res) {
           console.log(res.data)
-          that.data.choosepricepara = res.data
-          that.setData({
-            choosepricepara: that.data.choosepricepara,
-            isjg: false
-          });
+          that.data.choosepricepara = res.data;
+            that.setData({
+              choosepricepara: that.data.choosepricepara,
+              isjg: false
+            });
         }
       })
     };
@@ -310,9 +263,10 @@ Page({
   },
   searchId: function () {
     var that = this;
-    that.setData({
-      hidden: false
-    });
+
+    wx.showLoading({
+      title: '加载中',
+    })
     // that.data.page = 1
     that.data.page++;
     console.log(that.data.page)
@@ -362,13 +316,16 @@ Page({
         });
       }
     })
-    that.setData({
-      hidden: true
-    });
+
+    setTimeout(function () {
+      wx.hideLoading()
+    }, 500)
+
 
   },
   headmenu: function (e) {
     //二级列表显示隐藏
+
     var that = this;
     if (this.data.show === e.target.dataset.index) {
       that.setData({

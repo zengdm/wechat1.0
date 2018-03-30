@@ -1,5 +1,7 @@
 <!-- <scroll-view scroll-y="true" style="height:{{winHeight}}px"  bindscroll="scroll" upper-threshold="32" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">  -->
-<scroll-view scroll-y="true" style="height:{{winHeight}}px" bindscroll="scroll" lower-threshold="150" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}" bindscrolltolower="scrolltolower">
+<!-- <scroll-view scroll-y="true" style="height:{{winHeight}}px" bindscroll="scroll" lower-threshold="150" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}" bindscrolltolower="scrolltolower"> -->
+
+<view  bindtouchstart="handletouchstart"  bindtouchmove="handletouchmove" bindtouchend="handletouchend">
 
   <view class="swiper-container">
 
@@ -35,17 +37,19 @@
     <view class="little-one" wx:if="{{item.feedtype==0}}">
       <!-- <view class="little-one">  -->
       <view class="little-one-text">
-        <view class="stream-item-title">{{item.title}}</view>
+         <view class="stream-item-title">{{item.title}}</view> 
+        <!-- <view class="stream-item-title">&128077;</view> -->
         <view class="stream-item-info">
           <view>
             <text>{{item.author}}</text>
           </view>
-          <view>
+          <!-- <view>
             评论
-            <text>{{item.points.replies}}</text> 阅读
+            <text>{{points[item.feedid]['replies']?points[item.feedid]['replies']:0}}</text> 阅读
             <text wx:if="{{points[item.feedid]['pv']>0}}">{{points[item.feedid]['pv']}}</text>
             <text wx:else>0</text>
-          </view>
+          </view> -->
+          <view>{{item.showTime}}</view>
         </view>
       </view>
       <view class="little-one-photo">
@@ -64,11 +68,12 @@
         <view>
           <text>{{item.author}}</text>
         </view>
-        <view>
+        <!-- <view>
           评论
           <text>{{item.points.replies}}</text> 阅读
           <text>{{item.points.pv}}</text>
-        </view>
+        </view> -->
+         <view>{{item.showTime}}</view>
       </view>
     </view>
 
@@ -83,11 +88,12 @@
         <view>
           <text>{{item.author}}</text>
         </view>
-        <view>
+        <!-- <view>
           评论
           <text>{{item.points.replies}}</text> 阅读
           <text>{{item.points.pv}}</text>
-        </view>
+        </view> -->
+         <view>{{item.showTime}}</view>
       </view>
     </view>
 
@@ -96,9 +102,10 @@
     </loading>
 
   </view>
+  </view>
 
 
 
 
 
-</scroll-view>
+<!-- </scroll-view> -->

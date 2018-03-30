@@ -1,8 +1,11 @@
+/***
+ * 车型对比页面
+ */
+
 import { wxapi } from '../../plugins/wxapi';
 import { favorite } from '../../plugins/favorite';
 
 Page({
-
   /**
    * 页面的初始数据
    */
@@ -16,7 +19,10 @@ Page({
       selCarNum: 0,
       // 复选框选中的车型id列表,可通过selCars.length判断选中车型数量
       selCars: [],
+      // 车型ID选中状态
       selIds: {},
+      // 默认选中数量
+      defaultSelNum:5,
       intervalObj:'',
       intervalNum:0,
       },
@@ -53,10 +59,7 @@ Page({
       }
     }
 
-    // 处理过程提示
-    wx.showLoading({
-      title: '更新中...',
-    });
+    
   },
 
 
@@ -65,9 +68,14 @@ Page({
    */
   onShow: function () {
     var that = this;
+    // 处理过程提示
 
+    wx.showLoading({
+      title: '更新中...',
+    });
+    
     // 请求数据
-    that.fav.favList('car', 1, 10, 'cb_car');
+    that.fav.favList('car', 1, 50, 'cb_car');
 
     // 过期自动隐藏
     setTimeout(function(){
@@ -81,20 +89,22 @@ Page({
    */
   cb_car: function(res) {
     var that = this;
+    
     // 隐藏loading弹窗
     wx.hideLoading();
-    console.log(res);
     that.data.cb_car = res.data;
     if (res.code==0) {
       // 收藏的车型列表
       that.data.fav.carList = res.data;
       // 对比车型数量
       that.data.fav.carNum = 0;
-      // 
-      console.log(that.data.fav.carList);
+      
       // 统一设置模板变量
       that.setTipsData();
     } else {
+      that.data.fav.carList = [];
+      that.data.fav.carNum = 0;
+      that.setTipsData();
       // 接口返回错误提示
     }
     // console.log(res);
@@ -104,13 +114,29 @@ Page({
   setTipsData: function() {
     var that = this;
     that.data.fav.selIds = {};
-    console.log(that.data.fav.selCars);
+
+    // 默认选中
+    if (that.data.fav.defaultSelNum>0) {
+      for (let i in that.data.fav.carList) {
+        var pzid = that.data.fav.carList[i]['pzid'];
+        if (that.data.fav.selCars.length < that.data.fav.defaultSelNum) {
+          that.data.fav.selCars.push(pzid);
+        }
+      }
+      // 取消默认选中(只有页面刷新时默认选中)
+      that.data.fav.defaultSelNum = 0;
+    }
+    
+
     if (that.data.fav.selCars.length) {
       var len = that.data.fav.selCars.length;
       for(var i=0;i<len;i++) {
         that.data.fav.selIds[that.data.fav.selCars[i]] = 1;
       }
+    } else if(that.data.fav.defaultSelNum>0) {
+      
     }
+
     that.setData({
       tipsData: that.data.fav
     });
@@ -167,7 +193,7 @@ Page({
                 wx.showToast({
                   title: '删除成功',
                 });
-                that.wxapi.favList('car', 1, 10, 'cb_car');
+                that.fav.favList('car', 1, 50, 'cb_car');
               }
             }, 100);
           }
@@ -190,13 +216,20 @@ Page({
 
   goParam: function(e) {
     var that = this;
-    if (that.data.fav.selCars.length > 0) {
-      wx.navigateTo({
-        url: '../parameter/parameter?pzid=' + that.data.fav.selCars.join(','),
-      })
-    } else {
-
+    var selLen = that.data.fav.selCars.length;
+    if (!selLen || selLen>5) {
+      var msg = !selLen ? '请选择对比车型' :'最多选择5辆车';
+      wx.showToast({
+        title: msg,
+        image: '../images/warning.png'
+      });
+      return false;
     }
+
+    // 页面跳转
+    wx.navigateTo({
+      url: '../parameter/parameter?pzid=' + that.data.fav.selCars.join(','),
+    })
   },
 
   addCar: function (e) {

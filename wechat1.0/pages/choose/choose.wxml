@@ -35,5 +35,5 @@
 <view class='choosebg'></view>
 <view class='choose-button'>
   <view class='choose-resetting' bindtap="reset">重置</view>
-  <view class="choose-results" bindtap="result">有{{carsnumber}}款车型符合条件</view>
+  <view class="choose-results {{carsnumber==0  ?  'forbid'  :  ''}}" bindtap="result">有{{carsnumber}}款车型符合条件</view>
 </view>

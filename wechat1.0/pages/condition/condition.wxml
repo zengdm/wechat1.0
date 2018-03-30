@@ -24,18 +24,30 @@
           <view class="drawer-info">
             <text>{{item.pp_name}} {{item.name}}</text>
             <view class='drawer-info-price'>
-              指导价
-              <text class="drawer-price">{{item.min}}-{{item.max}}万</text>
-            
+              <block wx:if="{{item.min>0.00 || item.max>0.00}}">
+                指导价：
+                <text class="drawer-price" wx:if="{{item.min!=item.max}}">{{item.min}}-{{item.max}}万</text>
+                <text class="drawer-price" wx:else>{{item.min}}万</text>
+                
+              </block>
+              <block wx:else>
+                <block wx:if="{{item.product_status==3}}">
+                  即将上市
+                </block>
+                <block wx:elif="{{item.product_status==2}}">
+                  停产
+                </block>
+              </block>
             </view>
             <view class='drawer-info-num'>
-                共{{item.peizhi_count}}款车型符合需求 >
+              共{{item.peizhi_count}}款车型符合需求 >
             </view>
-         
-         </view>
+
+          </view>
         </view>
         <view class='drawer-endurance'>
-          <text>{{item.cron_xhlc}}</text>
+          <text wx:if="{{item.cron_xhlc != 0}}">{{item.cron_xhlc}}</text>
+          <text wx:if="{{item.cron_xhlc == 0}}">-</text>
           <view>公里</view>
         </view>
       </view>
@@ -82,7 +94,7 @@
       <view wx:else class="color-hui {{show==1 ? 'color-blue' : ''}}" bindtap="headmenu">
         <image class='nicemenuimg' src=''></image>
         <view class="nicemenu-item-head niceblue" data-index="1">
-          <text class='roundblue'>{{driveparaDatalen}}</text>类型</view>
+          <text class='roundblue ' data-index="1">{{driveparaDatalen}}</text>类型</view>
       </view>
       <view class="nicemenu-item-box {{show==1 ? 'showClass' : 'hideClass'}}">
         <view class='car-item-button'>
@@ -104,7 +116,7 @@
       <view wx:else class="color-hui {{show==2 ? 'color-blue' : ''}}" bindtap="headmenu">
         <image class='nicemenuimg' src=''></image>
         <view class="nicemenu-item-head niceblue" data-index="2">
-          <text class='roundblue'>{{enduranceparaDatalen}}</text>续航</view>
+          <text class='roundblue' data-index="2">{{enduranceparaDatalen}}</text>续航</view>
       </view>
       <view class="nicemenu-item-box {{show==2 ? 'showClass' : 'hideClass'}}">
         <view class='car-item-button'>
@@ -126,7 +138,7 @@
       <view wx:else class="color-hui {{show==3 ? 'color-blue' : ''}}" bindtap="headmenu">
         <image class='nicemenuimg' src=''></image>
         <view class="nicemenu-item-head niceblue" data-index="3">
-          <text class='roundblue'>{{choosecarTypeparalen}}</text>类别</view>
+          <text class='roundblue' data-index="3">{{choosecarTypeparalen}}</text>类别</view>
       </view>
       <view class="nicemenu-item-box {{show==3 ? 'showClass' : 'hideClass'}}">
         <view class='car-item-button'>
@@ -141,7 +153,4 @@
       </view>
     </view>
   </view>
-  <loading hidden="{{hidden}}">
-    加载中...
-  </loading>
 </view>

@@ -29,6 +29,9 @@ Page({
     screen: {width:0, height:0},
   },
   onLoad: function (options) {
+    wx.showLoading({
+      title: '加载中',
+    })
     // 页面初始化 options为页面跳转所带来的参数
     var that = this;
     that.wxapi = new wxapi(that);
@@ -59,6 +62,9 @@ Page({
     var that = this;
     // 异步获取配置数据
     that.wxapi.carArgs(that.data.pzid, 'cb_params');
+    setTimeout(function () {
+      wx.hideLoading()
+    }, 800)
   },
 
   onShow: function() {
@@ -70,12 +76,12 @@ Page({
         that.data.screen.height = res.windowHeight;
         that.setData({
           winWidth: res.windowWidth,
-          winHeight: res.windowHeight
+          winHeight: res.windowHeight,
         });
       }
     });
-    console.log('screen:');
-    console.log(that.data.screen);
+
+    
     // 设置屏幕滚动方向
     that.setScroll(1, 0);
   },
@@ -86,12 +92,13 @@ Page({
   cb_params: function(res) {
     var that = this;
     that.data.params = res;
-    
+    console.log(res);
     // 默认隐藏空项
     that.filterData();
 
     that.setData({//逻辑层到视图层
-      carParams: res,
+      carParams: that.data.params,
+      carParamsLen: that.data.params.length,
       currentTab:1
     });
   },
@@ -101,15 +108,17 @@ Page({
     var that = this;
     var params = that.data.params;
     var len = params.length;
-    console.log(that.data.fields);
     if (len > 0) {
       var first = that.data.params[0];
       for (let k in first){
+        // console.log(k);
+        // k下标从0开始
         var par = first[k];
         if (par.list) {
-            // 循环单一配置字段列表
+            // 循环单一配置字段列表list
             for (let p in par.list) {
               var field = par.list[p]['field'];
+              // console.log('field:'+field);
               // 默认字段显示
               if (typeof (that.data.fields[0][k]) == 'undefined') {
                 that.data.fields[0][k] = { 'showT': 1 };
@@ -131,7 +140,12 @@ Page({
                 for (var j = 0; j < len; j++) {
                   // 字段值
                   var value = params[j][k]['list'][p][v];
-                  
+
+                  // if (that.data.delIndexs[j] > 0) {
+                  //   hasValue = false;
+                  //   isDiff = false;
+                  //   continue;
+                  // }
                   // 空值判断
                   if (value != '-' && value != '--' && !hasValue) {
                     hasValue = true;
@@ -139,22 +153,21 @@ Page({
                   // 不同值判断
                   if (!prevalue) {
                     prevalue = value;
-                  } 
+                  }
+                  
                   if(prevalue!=value && !isDiff) {
                     isDiff = true;
                   }
                   // console.log('empty field=>: k=' + k + '/p=' + p + '/v=' + v + '/j=' + j + '/field=' + field)
-                  if (k=='price_info' && !hasValue) {
+                  if ((k=='price_info') && !hasValue) {
                     hasValue = true;
                   }
                 }  // end for [j]
 
                 // 标注空字段
                 if (!hasValue) {
+                  // 隐藏空项，0:不显示
                   that.data.fields[1][k][field] = 0;
-                }
-                // 标注不同字段
-                if (!hasValue) {
                   that.data.fields[2][k][field] = 0;
                 } else if (isDiff) {
                   that.data.fields[2][k][field] = 2;
@@ -172,13 +185,11 @@ Page({
           for (let n in that.data.fields[em][b]) {
             if (n == 'showT') {
               continue;
-            } else if (that.data.fields[em][b][n] == 1) {
+            } else if (that.data.fields[em][b][n] > 0) {
               num++;
             }
           }
-          if (!num) {
-            that.data.fields[em][b]['showT'] = 0;
-          }
+          that.data.fields[em][b]['showT'] = num;
         }
       }
     }
@@ -197,7 +208,6 @@ Page({
     var that = this;
     // 过滤方式 0:全部参数  1:隐藏空项  2:显示不同
     var opt = e.currentTarget.dataset.opt;
-    console.log(opt);
     
     that.setData({
       currentTab: opt
@@ -210,9 +220,9 @@ Page({
     that.data.scroll.left = e.detail.scrollLeft;
     that.data.scroll.height = e.detail.scrollHeight;
 
-    that.setData({
-      scrollData:that.data.scroll
-    })
+    // that.setData({
+    //   //scrollData:that.data.scroll
+    // })
   },
 
 
@@ -257,20 +267,35 @@ Page({
     var that = this;
     var index = e.currentTarget.dataset.index;
     wx.showModal({
-      title: '友情提示',
-      content: '是否取消所选车型对比?',
+      title: '暂时移除此车型？',
+      content: '（不会从您的对比库中删除）',
       success: function (res) {
+
+        that.setData({//逻辑层到视图层
+          carParamsLen: 4,
+        });
+
+
         if (!res.cancel) {
           that.data.delIndexs[index] = 1;
+          console.log(that.data.delIndexs);
+          that.filterData();
           that.setData({
             delIndexs:that.data.delIndexs
           })
         }
-      }
-    });
-    console.log("删除----------")
-    that.setData({
 
+
+        console.log(that.data.params);
+        console.log(that.data.delIndexs);
+
+      }
+
+
+    });
+    
+    that.setData({
+      'delIndexs': that.data.delIndexs,
     });
   },
   getclass: function () {

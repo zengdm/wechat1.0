@@ -2,8 +2,10 @@
 
 .body {
   width: 100%;
-  height: 100%;
+   /* height: 100%;  */
   background-color: #fff;
+  /* margin-bottom: 200rpx; */
+  padding-bottom: 80rpx;
 }
 
 .con-main {
@@ -37,6 +39,10 @@
 
 .choose-list {
   margin: 0 30rpx;
+  width: 92%;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
   height: 120rpx;
   line-height: 120rpx;
   border-bottom: 1px solid #f2f2f2;
@@ -57,12 +63,14 @@
 .begin {
   width: 100%;
   height: 100rpx;
-  position: fixed;
   line-height: 100rpx;
-  bottom: 0;
   font-size: 0;
   vertical-align: top;
-  z-index: 9999;
+}
+
+.fix{
+  position: fixed;
+  bottom: 0
 }
 
 .begin-delete {

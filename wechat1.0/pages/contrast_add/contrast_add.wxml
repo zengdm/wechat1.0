@@ -35,7 +35,7 @@
   <view class="drawer-mask" bindtap="hideDrawer" wx:if="{{showDrawerFlag}}" catchtouchmove></view>
   <!--遮罩 E-->
   <!--抽屉内容 S-->
-  <scroll-view animation="{{animationData}}" class="drawer-box" scroll-y="true">
+  <scroll-view animation="{{animationDrawer}}" class="drawer-box" scroll-y="true">
     <scroll-view class="drawer-content" scroll-y="true">
       <view wx:for="{{drawerSeriesData}}" class="drawer-content-item">
         <text>{{item.text}}</text>
@@ -71,12 +71,12 @@
   <view class="drawer-mask" bindtap="hideDrawer" wx:if="{{showDrawerFlag}}" catchtouchmove></view>
   <!--遮罩 E-->
   <!--抽屉内容 S-->
-  <scroll-view animation="{{animationData}}" class="drawer-box" scroll-y="true">
+  <scroll-view animation="{{animationDrawer}}" class="drawer-box" scroll-y="true">
     <scroll-view class="drawer-content" scroll-y="true">
     
           <text class='drawer-content-title'>{{carYear.pp_name}} {{carYear.cx_name}}</text>
       <view wx:for="{{carYear.peizhi}}"  class="drawer-content-item">
-        <view class='year'>{{item.niankuan}}</view>
+        <view class='year'>{{item.niankuan}}款</view>
 
         <view  class="drawer-child" wx:for="{{item.cars}}" bindtap='chooseList' data-pzid='{{item.pzid}}' data-pinyin="{{item.pinyin}}" data-cityval="{{cityIdData}}">
            <!-- <image class="img img-drawer" src="{{item.focus}}"></image>  -->

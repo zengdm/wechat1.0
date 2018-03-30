@@ -44,9 +44,13 @@ login.prototype={
       }
     }, 1000)
 
+    // 发起验证码
+    that.wxapi.sendVerifyCode(mobile, 'cb_verifyCode');
 
+
+    /*
     wx.request({
-      url: 'http://passport.diandong.com/ark/sendVerifyCode',
+      url: 'https://passport.diandong.com/ark/sendVerifyCode',
       method: "GET",
       data: {
         mobile: mobile
@@ -63,15 +67,17 @@ login.prototype={
     })
 
     console.log('send code' + phone);
+    */
+  },
+
+  // 验证码回调方法
+  cb_verifyCode: function(res, opt) {
+    console.log('get mobile verify code');
+    console.log(res);
   },
 
   mobileInputEvent: function (e) {
     var that = this;
-    console.log(that);
-    // that.form.data.mobile = e.detail.value;
-    // that.form.setData({
-    //   mobile: e.detail.value
-    // })
   },
 
 

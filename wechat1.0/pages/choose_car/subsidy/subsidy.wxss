@@ -7,30 +7,19 @@
 /* 标签切换--S */
 
 .sharebtn {
-  /* animation: kf-marque-animation 3s linear infinite; */
-  background: #33adff;
-  padding: 0 30rpx 0 20rpx;
-  box-shadow: 0 4rpx 12rpx 0 rgba(50, 173, 255, 0.30);
-  border-radius: 0 200rpx 200rpx 0;
-  /* width:280rpx;  */
-  height: 60rpx;
-  position: fixed;
   bottom: 126rpx;
-  font-size: 24rpx;
-  color: #fff;
-  left: -19%; 
-  line-height: 60rpx
 }
 
-.sharebtnicon {
-  width: 36rpx;
-  margin:0 0 5rpx 12rpx;
+
+.mian-scroll{
+  margin-top: 82rpx;
 }
 
 
 .swiper-tab {
+  width: 100%;
   display: flex;
-  justify-content: space-around;
+  /* justify-content: space-around; */
   align-items: center;
   height:81rpx;
   padding-bottom: 6rpx;
@@ -40,10 +29,14 @@
   font-size: 34rpx;
   border-bottom: solid 1rpx #e6e6e6;
   background-color: #fafafa;
+  position: fixed;
+  z-index: 30000;
 }
 
 .swiper-tab-item {
+    width: 50%;
     border-bottom: 2rpx solid #fafafa; 
+    margin: 0 60rpx;
 }
 .on{
   color: #33adff;
@@ -149,7 +142,7 @@
   width: 120rpx;
   min-width: 120rpx;
   height: 120rpx; 
-  border: 1rpx solid #dff2ff;
+  border: 2rpx solid #dff2ff;
   border-radius: 50%;
   text-align: center;
 }

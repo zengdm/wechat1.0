@@ -112,6 +112,7 @@ favorite.prototype = {
         }
       }
     }
+    
     favids = favids.join(',');
     try {
       wx.setStorageSync(that.getCacheKey(ftype), favids);
@@ -163,7 +164,7 @@ favorite.prototype = {
     // 登录信息
     if (that.wxapi.getLoginToken()) {
       // 登录状态，获取对比车型
-      that.wxapi.favList(ftype, page, psize, 'callbackCar');
+      that.wxapi.favList(ftype, page, psize, 'callback_page');
     } else if(ftype=='car') {
       // 非登录状态
       var carIds = that.getFav(ftype);
@@ -176,12 +177,18 @@ favorite.prototype = {
         }
         if (ids.length>0) {
           that.wxapi.listCarByIds(ids, 'callback_page');
+        } else {
+          that.callback_page({data:[]}, 'favlist');
         }
         
+      } else {
+        that.callback_page({data:[]}, 'favlist');
       }
+    } else {
+      that.callback_page({data:[]}, 'favlist');
     }
   },
-
+  // 此方法已无用
   callbackCar: function(data, ftype) {
     var that = this;
     if (that.data.pageCallFunc) {

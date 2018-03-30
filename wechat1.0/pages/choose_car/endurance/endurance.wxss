@@ -6,30 +6,20 @@
 }
 /* 标签切换--S */
 
-.sharebtn {
-  /* animation: kf-marque-animation 3s linear infinite; */
-  background: #33adff;
-  padding: 0 30rpx 0 20rpx;
-  box-shadow: 0 4rpx 12rpx 0 rgba(50, 173, 255, 0.30);
-  border-radius: 0 200rpx 200rpx 0;
-  /* width:280rpx;  */
-  height: 60rpx;
-  position: fixed;
-  bottom: 126rpx;
-  font-size: 24rpx;
-  color: #fff;
-  left: -19%; 
-  line-height: 60rpx
+
+.mian-scroll{
+  margin-top: 82rpx;
 }
 
-.sharebtnicon {
-  width: 36rpx;
-  margin:0 0 5rpx 12rpx;
+
+.sharebtn {
+  bottom: 126rpx;
 }
 
 .swiper-tab {
+  width: 100%;
   display: flex;
-  justify-content: space-around;
+  /* justify-content: space-around; */
   align-items: center;
   height:81rpx;
   padding-bottom: 6rpx;
@@ -39,10 +29,15 @@
   font-size: 34rpx;
   border-bottom: solid 1rpx #e6e6e6;
   background-color: #fafafa;
+  position: fixed;
+  z-index: 30000;
 }
 
 .swiper-tab-item {
-   border-bottom:2rpx solid #fafafa;
+   width: 200rpx; 
+  /* margin: 0 5rpx; */
+  margin: 0 auto;
+   border-bottom:6rpx solid #fafafa;
 }
 .on{
   color: #33adff;

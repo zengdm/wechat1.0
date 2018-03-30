@@ -6,37 +6,40 @@ export default function drawer(page){
     console.log(page);
     Object.assign(root,{
         hideDrawer(){
-          console.log('hidehide');
             root.setData(  //mask 
                 {  
-                showDrawerFlag: false
+                showDrawerFlag: false,
+                scrollBoolean:true,
+                showmask: false,
                 }  
             );  
-            var animation = wx.createAnimation({  
+            var animationDrawer = wx.createAnimation({  
                 duration: 300,   
                 timingFunction: "linear",  
                 delay: 0 
             });  
-            page.animation = animation;  
-            animation.translateX(drawerW).step();  
+            page.animationDrawer = animationDrawer;  
+            animationDrawer.translateX(drawerW).step();  
             page.setData({  
-                animationData: animation.export()  
+              animationDrawer: animationDrawer.export()  
             })
         },
         showDw(){
 
           // 测试drawer调用brand
-            var animation = wx.createAnimation({  
+          var animationDrawer = wx.createAnimation({  
                 duration: 300,   
                 timingFunction: "linear",  
                 delay: 0 
             });  
-            root.animation = animation;  
-            animation.translateX(-drawerW).step();
+          root.animationDrawer = animationDrawer;  
+          animationDrawer.translateX(-drawerW).step();
             root.setData(  //mask 
                 { 
                     showDrawerFlag: true,
-                    animationData: animation.export()
+                    animationDrawer: animationDrawer.export(),
+                    scrollBoolean: false,
+                    showmask: true,
                 }  
             );
         },
